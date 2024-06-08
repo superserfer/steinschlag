@@ -23,6 +23,7 @@ toc-title: "Inhaltsverzeichnis"
 library(tidyverse)
 library(fitdistrplus)
 library(univariateML)
+library(MASS)
 
 # Read Data
 zone_raw_1 <- read.csv("resources/out_1.csv")
