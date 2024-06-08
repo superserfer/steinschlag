@@ -20,18 +20,202 @@ toc-title: "Inhaltsverzeichnis"
 
 In diesem Abschnitt analysieren wir die Verteilungen der Zufallsvariablen für die verschiedenen Zonen unseres Modells. Wir betrachten die Verteilungen der Masse, der Geschwindigkeit und der Zeitabstände für Zone 1 und Zone 2. Diese Analysen sind entscheidend, um die Wahrscheinlichkeitsmodelle präzise zu kalibrieren und zuverlässige Simulationen zu generieren.
 
-### Zone 1 Masse
-
-Die Verteilung der Masse in Zone 1 wurde wie folgt analysiert:
 ```{r}
 
+library(tidyverse)
+library(fitdistrplus)
+library(univariateML)
+
+# Read Data
+zone_raw_1 <- read.csv("resources/out_1.csv")
+
+# Data Wrangling
+zone_1 <- zone_raw_1 %>% 
+  filter(Datum != "",) %>% 
+  mutate(
+    datetime = ymd_hm(paste(Datum, Uhrzeit, sep = " ")), 
+    masse = Masse..kg., 
+    velocity = Geschwindigkeit..m.s.) %>% 
+  arrange(datetime) %>% 
+  filter(masse > 0) %>% 
+  dplyr::select(datetime, masse, velocity)
+
+
+# Data Wrangling for Time Difference
+time_diff_1 <- data.frame(
+  stunden = as.numeric(diff(zone_1$datetime))
+  ) %>% 
+  mutate(stunden = stunden /60/60) # Um stunden zu erhalten
+```
+
+
+### Zone 1 Masse
+
+
+```{r}
+# Calc Distribution
+mass.norm_1 <- fitdist(zone_1$masse, "norm")
+mass.unif_1 <- fitdist(zone_1$masse, "unif")
+mass.lnorm_1 <- fitdist(zone_1$masse, "lnorm")
+mass.weibull_1 <- fitdist(zone_1$masse, "weibull")
+mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
+
+# Plot different Distributions for mass
+denscomp(list(mass.norm_1, mass.unif_1, mass.lnorm_1, mass.weibull_1), legendtext = mass.legend_1, plotstyle = "ggplot")
+descdist(zone_1$mass, boot = 10000, discrete = FALSE)
+
+# Die passen am besten
+plot(mass.lnorm_1)
+plot(mass.unif_1)
+plot(mass.weibull_1)
+plot(mass.norm_1)
+
+model_select(zone_1$masse)#lognormal  besser
 ```
 
 ### Zone 1 Geschwindigkeit
+
+```{r}
+velocity.norm_1 <- fitdist(zone_1$velocity, "norm")
+velocity.expo_1 <- fitdist(zone_1$velocity, "exp")
+velocity.unif_1 <- fitdist(zone_1$velocity, "unif")
+velocity.lnorm_1 <- fitdist(zone_1$velocity, "lnorm")
+velocity.gamm_1 <- fitdist(zone_1$velocity, "gamma")
+velocity.weibull_1 <- fitdist(zone_1$velocity, "weibull")
+velocity.legend_1 <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+
+# Plot different Distributions for velocity
+denscomp(list(velocity.norm_1, velocity.expo_1, velocity.unif_1, velocity.lnorm_1, velocity.gamm_1, velocity.weibull_1), legendtext = velocity.legend_1, plotstyle = "ggplot")
+descdist(zone_1$velocity, boot = 10000, discrete = FALSE)
+
+# Die passen am besten
+plot(velocity.norm_1)
+plot(velocity.weibull_1)
+plot(velocity.expo_1)
+plot(velocity.gamm_1)
+plot(velocity.lnorm_1)
+
+model_select(zone_1$velocity)#Normalverteilung passt am besten
+```
+
 ### Zone 1 Zeitabstände
+
+```{r}
+time_diff.norm_1 <- fitdist(time_diff_1$stunden, "norm")
+time_diff.unif_1 <- fitdist(time_diff_1$stunden, "unif")
+time_diff.expo_1 <- fitdist(time_diff_1$stunden, "exp")
+time_diff.legend_1 <- c("Normal", "Unif", "Expo")
+
+# Plot different Distributions for velocity
+denscomp(list(time_diff.norm_1, time_diff.unif_1, time_diff.expo_1), legendtext = time_diff.legend_1, plotstyle = "ggplot")
+descdist(time_diff_1$stunden, boot = 10000)
+
+# Die passen am besten 
+plot(time_diff.norm_1)
+plot(time_diff.unif_1)
+plot(time_diff.expo_1)
+
+
+model_select(time_diff_1$stunden)#exponentiell model
+```
+
+
+```{r}
+# Read Data
+zone_raw <- read.csv("resources/out_2.csv")
+
+# Data Wrangling
+zone <- zone_raw %>% 
+  filter(Date != "",) %>% 
+  mutate(
+    datetime = ymd_hm(paste(Date, Uhrzeit, sep = " ")), 
+    masse = m..kg., 
+    velocity = v..m.s.) %>% 
+  arrange(datetime) %>% 
+  filter(masse > 0) %>% 
+  dplyr::select(datetime, masse, velocity)
+
+# Data Wrangling for Time Difference
+time_diff <- data.frame(
+  stunden = as.numeric(diff(zone$datetime)))
+```
+
 ### Zone 2 Masse
+
+```{r}
+# Calc Distribution
+mass.norm <- fitdist(zone$masse, "norm")
+mass.expo <- fitdist(zone$masse, "exp")
+mass.unif <- fitdist(zone$masse, "unif")
+mass.lnorm <- fitdist(zone$masse, "lnorm")
+mass.gamm <- fitdist(zone$masse, "gamma")
+mass.weibull <- fitdist(zone$masse, "weibull")
+mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+
+# Plot different Distributions for mass
+denscomp(list(mass.norm, mass.expo, mass.unif, mass.lnorm, mass.gamm, mass.weibull), legendtext = mass.legend, plotstyle = "ggplot")
+descdist(zone$mass, boot = 10000, discrete = FALSE)
+
+# Die passen am besten 
+plot(mass.expo)
+plot(mass.gamm)
+plot(mass.weibull)
+plot(mass.lnorm)
+
+model_select(zone$masse) # Gemäss univariateML package passt die exponentielle Verteilung am besten, da aber das Gewicht den Wert 0 nicht annhemen kann, haben wir uns für weibull entschieden (fast identdisch)
+
+```
+
 ### Zone 2 Geschwindigkeit
+
+```{r}
+# Calc Distribution
+velocity.norm <- fitdist(zone$velocity, "norm")
+velocity.expo <- fitdist(zone$velocity, "exp")
+velocity.unif <- fitdist(zone$velocity, "unif")
+velocity.lnorm <- fitdist(zone$velocity, "lnorm")
+velocity.gamm <- fitdist(zone$velocity, "gamma")
+velocity.weibull <- fitdist(zone$velocity, "weibull")
+velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+
+# Plot different Distributions for velocity
+denscomp(list(velocity.norm, velocity.expo, velocity.unif, velocity.lnorm, velocity.gamm, velocity.weibull), legendtext = velocity.legend, plotstyle = "ggplot")
+descdist(zone$velocity, boot = 10000, discrete = FALSE)
+
+# Die passen am besten
+plot(velocity.norm)
+plot(velocity.unif)
+plot(velocity.lnorm)
+plot(velocity.gamm)
+plot(velocity.weibull)
+
+#Check
+model_select(zone$velocity)#Weibull passt am besten
+```
+
 ### Zone 2 Zeitabstände
+
+```{r}
+# Calc Distribution
+time_diff.norm <- fitdist(time_diff$stunden, "norm")
+time_diff.expo <- fitdist(time_diff$stunden, "exp")
+time_diff.unif <- fitdist(time_diff$stunden, "unif")
+time_diff.lnorm <- fitdist(time_diff$stunden, "lnorm")
+time_diff.gamm <- fitdist(time_diff$stunden, "gamma")
+time_diff.weibull <- fitdist(time_diff$stunden, "weibull")
+time_diff.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+
+# Die passen am besten 
+plot(time_diff.norm)
+plot(time_diff.lnorm)
+plot(time_diff.gamm)
+plot(time_diff.weibull)
+plot(time_diff.expo)
+
+#Check
+model_select(time_diff$stunden)#gamma passt am besten
+```
+
 
 \newpage
 # Simulation
