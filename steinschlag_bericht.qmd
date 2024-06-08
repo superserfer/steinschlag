@@ -10,4 +10,29 @@ toc-title: "Inhaltsverzeichnis"
 ---
 \newpage
 
-# Test
+# Problem
+
+\newpage
+# Wahrscheinlichkeitsmodellierung
+## Zufallsvariablen 
+
+## Verteilungen
+### Zone 1 Masse
+### Zone 1 Geschwindigkeit
+### Zone 1 Zeitabstände
+### Zone 2 Masse
+### Zone 2 Geschwindigkeit
+### Zone 2 Zeitabstände
+
+\newpage
+# Simulation
+## Generieren
+## Wahrscheinlichkeitsberechnung
+
+\newpage
+# Ergebniss
+
+\newpage
+# Empfehlung
+
+
