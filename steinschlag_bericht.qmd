@@ -17,7 +17,16 @@ toc-title: "Inhaltsverzeichnis"
 ## Zufallsvariablen 
 
 ## Verteilungen
+
+In diesem Abschnitt analysieren wir die Verteilungen der Zufallsvariablen für die verschiedenen Zonen unseres Modells. Wir betrachten die Verteilungen der Masse, der Geschwindigkeit und der Zeitabstände für Zone 1 und Zone 2. Diese Analysen sind entscheidend, um die Wahrscheinlichkeitsmodelle präzise zu kalibrieren und zuverlässige Simulationen zu generieren.
+
 ### Zone 1 Masse
+
+Die Verteilung der Masse in Zone 1 wurde wie folgt analysiert:
+```{r}
+
+```
+
 ### Zone 1 Geschwindigkeit
 ### Zone 1 Zeitabstände
 ### Zone 2 Masse
