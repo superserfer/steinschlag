@@ -12,11 +12,12 @@ toc-title: "Inhaltsverzeichnis"
 
 # Problem
 
-Die Kantonsstrasse nach Schiers GB ist von Steinschlägen betroffen. Um die Sicherheit der Verkehrsteilnehmer zu gewährleisten, wurde im Auftrag des Kantonsingenieurs diese Risikoanalyse erstellt.
+Die Kantonsstrasse nach Schiers GB ist von Steinschlägen betroffen. Um die Sicherheit der Verkehrsteilnehmer zu gewährleisten, wurde im Auftrag des Kantonsingenieurs diese Risikoanalyse erstellt. Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist.
+Diese Analyse soll die Basis für seine Entscheidung bilden.
 
-Das Problem: An zwei Stellen des Hangs fallen täglich Steine herunter. Bevor diese die Strasse erreichen, werden sie von Fangnetzen aufgehalten. Diese Netze können Steine bis zu 1200 kJ auffangen. Wenn jedoch Steine mit einem Gewicht über 2000 kg in den Netzen liegen, verringert sich die Haltekraft auf 600 kJ. Die Netze werden alle 24 Stunden geräumt.
+An zwei Stellen des Hangs fallen täglich Steine herunter. Bevor diese die Strasse erreichen, werden sie von Fangnetzen aufgehalten. Diese Netze können eine bestimmte Menge an Energie von herabfallenden Steinen aufnehmen. Wenn jedoch besonders schwere Steine in den Netzen liegen, verringert sich ihre Haltekraft. Die Netze werden täglich geräumt. Durch die Abnutzung der Netze hat sich die Stabilität beeinträchtigt und das Risiko erhöht.
 
-Für die Risikoanalyse haben Experten und Geologen Daten zur Geschwindigkeit, Masse und Zeit der Steinschläge gesammelt. Diese Daten bilden die Grundlage für die Analyse
+Für die Risikoanalyse haben Experten und Geologen Daten zur Geschwindigkeit, Masse und Zeit der Steinschläge gesammelt. Diese Daten bilden die Grundlage für diese Analyse.
 
 \newpage
 # Wahrscheinlichkeitsmodellierung
