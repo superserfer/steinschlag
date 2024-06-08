@@ -15,8 +15,8 @@ toc-title: "Inhaltsverzeichnis"
 \newpage
 # Wahrscheinlichkeitsmodellierung
 ## Zufallsvariablen 
-
-## Verteilungen Zone 1
+## Verteilungen
+### Verteilungen Zone 1
 
 ```{r}
 
@@ -117,7 +117,7 @@ plot(time_diff.expo_1)
 model_select(time_diff_1$stunden)#exponentiell model
 ```
 
-## Verteilungen Zone 2
+### Verteilungen Zone 2
 ```{r}
 # Read Data
 zone_raw <- read.csv("resources/out_2.csv")
