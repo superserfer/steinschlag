@@ -5,6 +5,9 @@ author: "Livio Prosdocimo, Roberto Lorusso, Linus Ackermann"
 date: last-modified
 date-format: "DD.MM.YYYY"
 format: pdf
+toc: true
+toc-title: "Inhaltsverzeichnis"
 ---
+\newpage
 
 # Test
