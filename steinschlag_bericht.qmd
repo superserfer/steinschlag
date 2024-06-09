@@ -7,32 +7,121 @@ date-format: "DD.MM.YYYY"
 format: pdf
 toc: true
 toc-title: "Inhaltsverzeichnis"
+echo: false
 ---
+
+```{r}
+library(ggplot2)
+```
+
 \newpage
 
 # Problem
 
 \newpage
-# Wahrscheinlichkeitsmodellierung
-## Zufallsvariablen 
 
-## Verteilungen
+# Wahrscheinlichkeitsmodellierung
+
+## Zufallsvariablen
+
+## Verteilungen {#verteilungen}
+
 ### Zone 1 Masse
+
 ### Zone 1 Geschwindigkeit
+
 ### Zone 1 Zeitabstände
+
 ### Zone 2 Masse
+
 ### Zone 2 Geschwindigkeit
+
 ### Zone 2 Zeitabstände
 
 \newpage
+
 # Simulation
+
 ## Generieren
+
+```{r}
+amount_iteration <- 1e5
+```
+
+Das Generieren der Daten wurde in R umgesetzt. Dabei wurden die gewählten Verteilungen gewählt, welche im Kapitel [Verteilungen](#Verteilungen) gewählt wurden. Es wurde sich dafür entschieden die Anzahl Steinschläge auf **`r amount_iteration`** Interation festzulegen.
+
+```{r}
+#| echo: true
+set.seed(8128) # The 4. perfect number
+zone_1_generated = data.frame(
+  mass = runif(amount_iteration, min=0, max=1),
+  velocity = runif(amount_iteration, min=0, max=1),
+  time_diff = runif(amount_iteration, min=0, max=1)
+)
+
+zone_2_generated = data.frame(
+  mass = runif(amount_iteration, min=0, max=1),
+  velocity = runif(amount_iteration, min=0, max=1),
+  time_diff = runif(amount_iteration, min=0, max=1)
+)
+```
+
+Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel dafür berechnet und in Kilo Newton Meter umgewandelt.
+
+$$
+E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
+$$\newline
+
+```{r}
+#| echo: true
+
+zone_1_generated$kin_energy = 
+  zone_1_generated$mass * zone_1_generated$velocity^2 * 0.5 / 1000
+
+zone_2_generated$kin_energy = 
+  zone_2_generated$mass * zone_2_generated$velocity^2 * 0.5 / 1000
+```
+
+// TODO: Show Plots with densetiy: ExtraGrid \newpage
+
 ## Wahrscheinlichkeitsberechnung
 
+Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert.
+
+Um die Masse im Netz bei einem Steinschlag zu berechnen, wird rekursiv durch alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, gegangen und die Masse summiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
+
+Mit diesen Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, auszurechnen. Dafür verwenden wir folgende Formel.
+
+$$
+P_{\text{Netz reisst}} = \frac{\text{Anzahl Netz Versagen}}{\text{Anzahl Steinschläge}} 
+$$
+
+Das ein Steinschlag in einem Unfall endet muss zusätzlich ein Auto vor Ort sein. Um die Wahrscheinlichkeit zu berechnen wird die Zeit Benötigt, welches ein Auto braucht um für einen Möglichen Steinschlag zu bremsen. Dies lässt sich aus dem Bremsweg, was sich bei einer [Gefahrenbesmung bei 18m](https://www.adac.de/verkehr/rund-um-den-fuehrerschein/erwerb/anhalteweg-berechnen/) liegt, bei einer Geschwindigkeit von 60 km/h und der Geschwindigkeit, wie folgt berechnen.
+
+$$
+t = \frac{2s}{v} \Rightarrow \frac{2\times18m}{16.\overline{6}m/s} \approx 2.16s 
+$$
+
+Dazu wird noch die [Vorbremszeit von 1.2 Sekunde](https://www.adac.de/verkehr/rund-um-den-fuehrerschein/erwerb/reaktionsweg-berechnen/) addiert, welche ein Mensch braucht um auf die Bremse zu drücken. Damit kommt man auf *3.36 Sekunden*, welche ein Auto in der Gefahrenzone ist. Durch diesen Wert können wir die Wahrscheinlichkeit berechnen, dass ein Auto zu einem beliebigen Zeitpunkt in der Gefahrenzone ist.
+
+$$
+P_{\text{Auto anwesend}} = \frac{3.36 \times \text{Anazhl Autos Pro Tag}}{\text{Anzahl Sekunden Pro Tag}} \Rightarrow \frac{3.36 \times 600}{86400} = \frac{7}{300}
+$$
+
+Mit der Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, ein Auto anwesend ist und der durchschnittlichen Steinschläge pro Jahr, lässt sich die Wahrscheinlichkeit eines tödlichen Unfalls in einer Zone für ein Jahr berechnen.
+
+$$
+P_{\text{Tödlicher Unfall pro Jahr}} = P_{\text{Auto anwesend}} \times P_{\text{Netz reisst}} \times \text{ Durchschnittliche Steinschläge pro Jahr}
+$$
+
+## Aussagekraft der Simulation
+
+// TODO: mit Varianz und so. Könnte noch triky werden.
+
 \newpage
+
 # Ergebniss
 
 \newpage
+
 # Empfehlung
-
-
