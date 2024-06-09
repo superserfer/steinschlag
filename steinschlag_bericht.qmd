@@ -56,11 +56,34 @@ In den folgenden Abschnitten wird die Berechnung bis zum Durchbrechen eines Fang
 
 ## Verteilungen
 
-Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die drei oben genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
+Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden und zwar möglichst viele. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
 
-Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Dafür wird für jede Kategorie eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können die Eigenschaften der Daten anhand einem theoretisches Modell widerspiegelt werden und Fälle nachstellen, die der Vergangenheit am nächsten kommen.
+Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Davor wird aber jeder Variable eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können Fälle repdorduziert werden, welche die Eigenschaften der Daten anhand den gewählten theoretischen Modellen  widerspiegelen. Im nächsten Schritt werden den Variablen Verteilungen zugeteilt. Da zwei stellen an der Strasse von Steinschläge betroffen sind, müssen diese getrennt betrachtet werden, Beide Hänge haben ihre eigenen Eigenschaften bezüglich Masse, Geschwindigkeit und den Zeitlichen Unterscherschiede.
 
-### Verteilungen Zone 1
+### Wahl der Verteilungen
+
+Miit dem fitdistr-Package können die verschiedenen Verteilungen auf die Daten angewendet werden . 
+
+Alle verwendeten Verteilungen durchlaufen dann einen Prozess, in dem die am besten geeignete Verteilung ermittelt wird. Der Prozess ist folgend durchgeführt worden:
+
+- Zunächst wird ein Histogramm der Daten mit den Verteilungen als Linien betrachtet. Die Verteilungen, welche den Balken besser folgen sind eher geeignet.
+
+- In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell 
+
+- Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von den verschiedenen Verteilungen.
+
+Diese drei Schritte allein erlauben noch keine endgültige Entscheidung darüber, welche Verteilung am besten geeignet ist. Sie dienen jedoch dazu, die Auswahl der möglichen Verteilungen einzuschränken und eine Orientierung zu geben, mit welchen Daten gearbeitet wird. 
+
+- Nachdem nun einige Verteilungen ausgeschlossen werden konnten, kann man sich den möglichen Verteilungen zuwenden. Man betrachtet die Verteilungen anhand von CDF-, QQ- und PP-Plots. Die Punkte in den Plots stellen die vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten, welche die Verteilung erzeugt, auf der X-Achse. Danach kann eine endgültige Entscheidung getroffen werden.
+
+In Fällen, in denen die Verteilungen ähnlich sind und eine Entscheidung schwierig ist, sollte Folgendes berücksichtigt werden.
+
+-Größere Massen und grössere Geschwindigkeit bedeuten ein höheres Risiko, daher ist es wichtiger, die grössten Daten auf den QQ-, CDF- und PP-Plots abzudecken, als kleinere Daten.
+
+- Bei den Zeitlichen Abstände sind kleinere Daten wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine größere Gefahr darstellen. In diesem Fall ist es wichtiger, die kleineren Daten in den QQ-, CDF- und PP-Plots abzudecken, als die grossen.
+
+Im nächsten Abschnitt befindet sich die Anwendung dieses Prozess auf beide Hänge. 
+
 
 ```{r, echo = FALSE}
 
@@ -93,16 +116,15 @@ time_diff_1 <- data.frame(
 
 ### Zone 1 Masse
 
-Zunächst wird der Hang 1 hinsichtlich der Masse untersucht.
+Zunächst wird die Zone 1 hinsichtlich Masse untersucht.
+Beim Ausschlussverfahren zeigt sich, dass nur die Weibull- und die Lognormalverteilung in Frage kommen könnten.
+Der Vorschlag von UnivariateML ist die Lognormalverteilung. 
 
-Zuerst werden  mit dem fitdistr-Package verschiedene Verteilungen auf den Datensatz der Masse angewendet um diese dann zu analysieren. 
+Vergleicht man die Masse am Zone 1 zwischen der Lognormalverteilung und der Weibullverteilung, so würde die Lognormalverteilung insgesamt besser die Daten abdecken, nur das letzte Quantil im QQ-Plot weicht deutlich ab. 
 
-Alle Verteilungen werden dann mit einem Histogramm welches die Daten wiederspiegelt angezeigt. In einem zweiten Plot, der ein Cullen-Frey-Diagramm darstellt, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell kompatibler.
+Bei der Weibullverteilung weichen die Punkte ebenfalls von der Linie ab, aber insbesondere die letzten Quantile passen zu dieser Verteilung. 
 
-Diese beiden Vergleiche allein erlauben noch keine endgültige Entscheidung darüber, welche Verteilung am besten geeignet ist. Sie dienen jedoch dazu, die Auswahl der möglichen Verteilungen einzuschränken und eine Orientierung zu geben, mit welchen Daten gearbeitet wird. 
-
-Dabei zeigt sich, dass nur die Weibull- und die Lognormalverteilung in Frage kommen könnten.
-
+Trotz kleiner Abweichungen wird die Weibull-Verteilung zugewiesen. Gemäss letztem Schritt im Prozess ist es wichtig, dass die grössten Massen gedeckt sind. 
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -116,39 +138,15 @@ mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
 ```{r, echo = FALSE}
 # Plot different Distributions for mass
 denscomp(list(mass.norm_1, mass.unif_1, mass.lnorm_1, mass.weibull_1), legendtext = mass.legend_1, plotstyle = "ggplot")
-descdist(zone_1$mass, boot = 10000, discrete = FALSE)
 ```
-
-Diese werden in einem Goodness-of-Fit-Test verglichen. Dazu müssen die CDF-, QQ- und PP-Plots betrachtet werden. Die Punkte in den Plots stellen den Vergleich der vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten auf der X Achse, welche die Verteilung erzeugt. 
-
-Der QQ-Plot vergleicht die Quantile, der PP-Plot die Perzentile und der CDF-Plot die kumulative Verteilungsfunktion.
-Wie gut eine Verteilung zu den Daten passt, erkennt man an den Linien. Wenn die Punkte der Gegenüberstellung auf der Linie liegen, passt die Verteilung gut zu den Daten.
-
-Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von Verteilungen 
-
-In diesem Fall wird die Lognormalverteilung empfohlen.
-
-```{r, echo = FALSE}
-# Die passen am besten
-plot(mass.lnorm_1)
-plot(mass.unif_1)
-plot(mass.weibull_1)
-plot(mass.norm_1)
-
-model_select(zone_1$masse)#lognormal  besser
-```
-
-Vergleicht man die Masse am Hang 1 zwischen der Lognormalverteilung und der Weibullverteilung, so liegt die Lognormalverteilung nahe an der Linie, nur das letzte Quantil im QQ-Plot weicht deutlich ab. Bei der Weibullverteilung weichen die Punkte ebenfalls von der Linie ab, aber insbesondere das letzte Quantil liegt nahe an der Linie.
-
-Trotz kleiner Abweichungen wird die Weibull-Verteilung gewählt. Größere Massen bedeuten ein höheres Risiko, daher ist es wichtiger, die schwersten Massen mit der Verteilung abzudecken.
-
-Dieser Vorgang wird für die Auswahl bei allen Variablen wiederholt.
 
 ### Zone 1 Geschwindigkeit
 
-Durch die erste Analyse stellt sich heraus, dass viele Verteilungen passen könnten, Normalverteilung, Weibull, Exponential, Gamma oder Lognormal. 
+Durch die erste Analyse filtert sich heraus, dass viele Verteilungen passen könnten, Normalverteilung, Weibull, Exponential, Gamma oder Lognormal. 
 
 Der Vorschlag von UnivariateML ist die Normalverteilung.
+
+Nach dem Abgleich der Plots ist klar, dass die Normalverteilung am besten passt. Die Punkte verlaufen fast durchgehend entlang der Linie. Besonders in den oberen Werten ist diese Verteilung am nächsten bei der Linie. Daher wird die Normalverteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -164,25 +162,15 @@ velocity.legend_1 <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "W
 ```{r, echo = FALSE}
 # Plot different Distributions for velocity
 denscomp(list(velocity.norm_1, velocity.expo_1, velocity.unif_1, velocity.lnorm_1, velocity.gamm_1, velocity.weibull_1), legendtext = velocity.legend_1, plotstyle = "ggplot")
-descdist(zone_1$velocity, boot = 10000, discrete = FALSE)
 ```
-
-```{r, echo = FALSE}
-# Die passen am besten
-plot(velocity.norm_1)
-plot(velocity.weibull_1)
-plot(velocity.expo_1)
-plot(velocity.gamm_1)
-plot(velocity.lnorm_1)
-
-model_select(zone_1$velocity)#Normalverteilung passt am besten
-```
-
-Nach dem Abgleich der Plots ist klar, dass die Normalverteilung am genauesten passt. Die Punkte verlaufen fast durchgehend entlang der Linie, was auf eine gute Übereinstimmung mit den Daten hinweist. Besonders in den oberen Quantilen ist diese Verteilung am nächsten bei der Linie.
 
 ### Zone 1 Zeitabstände
 
-Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten. Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten. 
+
+Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+
+Die Auswertung der Plots zeigt deutlich, dass die Exponentialverteilung am besten passt. Die kleineren Werte werden bei der Exponentialverteilung besser gedeckt. Die anderen Verteilungen weichen fest von der Linie ab. Daher wird die Exponentialverteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -195,22 +183,8 @@ time_diff.legend_1 <- c("Normal", "Unif", "Expo")
 ```{r, echo = FALSE}
 # Plot different Distributions for velocity
 denscomp(list(time_diff.norm_1, time_diff.unif_1, time_diff.expo_1), legendtext = time_diff.legend_1, plotstyle = "ggplot")
-descdist(time_diff_1$stunden, boot = 10000)
 ```
 
-```{r, echo = FALSE}
-# Die passen am besten 
-plot(time_diff.norm_1)
-plot(time_diff.unif_1)
-plot(time_diff.expo_1)
-
-
-model_select(time_diff_1$stunden)#exponentiell model
-```
-
-Die Auswertung der Plots zeigt deutlich, dass die Exponentialverteilung am besten passt.
-
-Die kleineren Quantile werden bei der Exponentialverteilung besser gedeckt. Bei den Zeitlichen Abstände sind die kleineren Quantile wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine größere Gefahr darstellen.
 
 ```{r, echo = FALSE}
 # Read Data
@@ -232,10 +206,13 @@ time_diff <- data.frame(
   stunden = as.numeric(diff(zone$datetime)))
 ```
 
-### Verteilungen Zone 2
 ### Zone 2 Masse
 
-Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl. Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl. 
+
+Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+
+Nach Bewertung der Plots wird die Exponentialverteilung zugewiesen. Gamma- und Weibullverteilungen sind zwar ähnlich wie die Exponentialverteilung, decken aber die oberen Werte schlechter ab. Lognormal liegt im Allgemeinen näher an der Linie, berücksichtigt aber den höchsten Wert nicht.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -253,27 +230,16 @@ mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull
 ```{r, echo = FALSE}
 # Plot different Distributions for mass
 denscomp(list(mass.norm, mass.expo, mass.unif, mass.lnorm, mass.gamm, mass.weibull), legendtext = mass.legend, plotstyle = "ggplot")
-descdist(zone$mass, boot = 10000, discrete = FALSE)
+
 ```
-
-
-```{r, echo = FALSE}
-# Die passen am besten 
-plot(mass.expo)
-plot(mass.gamm)
-plot(mass.weibull)
-plot(mass.lnorm)
-
-model_select(zone$masse) 
-```
-
-Nach Bewertung der Plots wird die Exponentialverteilung gewählt. Gamma, Weibull sind ähnlich wie die Exponentialverteilung, decken aber die oberen Quantile schlechter ab. Lognormal liegt im Allgemeinen näher an der Linie, lässt aber das letzte Quantil aus. Auch am zweiten Hang ist die größere Masse ausschlaggebender.
 
 ### Zone 2 Geschwindigkeit
 
-Die Diagramme zeigen, dass viele Verteilungen ausgewählt werden können. Normal, Lognormal, Weibull und Gamma stehen zur Auswahl.
+Beim Ausschlusserfahren erkennt man, dass viele Verteilungen ausgewählt werden könnten. Normal-, Lognormal-, Weibull- und Gammaverteilung stehen zur Auswahl.
 
 Der Vorschlag von UnivariateML ist die Weibullverteilung.
+
+Die Auswertung zeigt, dass nur die Weibullverteilung die Daten umfangreich decken kann. Daher wird diese Verteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -290,27 +256,15 @@ velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Wei
 ```{r, echo = FALSE}
 # Plot different Distributions for velocity
 denscomp(list(velocity.norm, velocity.expo, velocity.unif, velocity.lnorm, velocity.gamm, velocity.weibull), legendtext = velocity.legend, plotstyle = "ggplot")
-descdist(zone$velocity, boot = 10000, discrete = FALSE)
 ```
-
-
-```{r, echo = FALSE}
-# Die passen am besten
-plot(velocity.norm)
-plot(velocity.lnorm)
-plot(velocity.gamm)
-plot(velocity.weibull)
-
-#Check
-model_select(zone$velocity)#Weibull passt am besten
-```
-
-Die Auswertung zeigt, dass nur die Weibullverteilung die Daten umfangreich decken kann. Daher wird diese Verteilung gewählt.
 
 ### Zone 2 Zeitabstände
 
-In diesem Fall erkennt man ebenfalls, dass die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl stehen. 
-Der Vorschlag von UnivariateML ist die Gammaverteilung
+Nach der ersten Prüfung kann man die Auswahl auf Weibull-, Gamma-, Exponential- und Lognormalverteilung reduzieren. 
+
+Der Vorschlag von UnivariateML ist die Gammaverteilung.
+
+Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die einzigen Modelle sind, welche in Frage kommen. Die korrekte Verteilung in diesem Fall ist die Gammaverteilung, da diese sowohl der Empfehlung von UnivariateML entspricht als auch die unteren Werte besser abdeckt.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -326,25 +280,21 @@ time_diff.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "We
 
 ```{r, echo = FALSE}
 # Plot different Distributions for time difference
-
 denscomp(list(time_diff.norm, time_diff.expo, time_diff.unif, time_diff.lnorm, time_diff.gamm, time_diff.weibull), legendtext = time_diff.legend, plotstyle = "ggplot")
-descdist(time_diff$stunden, boot = 10000)
 ```
 
+Die folgenden Verteilungen wurden den Variablen zugeordnet:
 
+Zone 1
+- Masse: Weibullverteilung
+- Geschwindigkeit: Normalverteilung
+- Zeitliche Abstände: Exponentialverteilung
 
-```{r, echo = FALSE}
-# Die passen am besten 
-plot(time_diff.lnorm)
-plot(time_diff.gamm)
-plot(time_diff.weibull)
-plot(time_diff.expo)
+Zone2:
+- Masse: Exponentialverteilung
+- Geschwindigkeit: Weibullverteilung
+- Zeitliche Abstände: Gammaverteilung
 
-#Check
-model_select(time_diff$stunden)#gamma passt am besten
-```
-
-Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die genausten Modelle sind. Gewählt wird hier die Gammaverteilung, da diese sowohl der Empfehlung von UnivariateML entspricht als auch die unteren Quantile im Vergleich besser abdeckt.
 
 
 \newpage
