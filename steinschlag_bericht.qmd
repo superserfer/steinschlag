@@ -45,10 +45,7 @@ Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. Die For
 
 Um diese beiden Aspekte zu ermitteln, benötigen wir Daten über die Masse, Geschwindigkeit und zeitlichen Abständen der Steine. Experten und Geologen haben diese Daten in den letzten Monaten bei den vorkommenden Steinschlägen gesammelt und für die Modellierung zur Verfügung gestellt. Diese Daten bilden die Grundlage für diese Analyse.
 
-Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die drei oben genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
-
-Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Dafür wird für jede Kategorie eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können die Eigenschaften der Daten anhand einem theoretisches Modell widerspiegelt werden und Fälle nachstellen, die der Vergangenheit am nächsten kommen.
-
+In den folgenden Abschnitten wird die Berechnung bis zum Durchbrechen eines Fangnetzes durch einen Steinschlag behandelt. Die Todeszone wird am Schluss der Analyse bei der Gesamtkalkulation berücksichtigt.
 
 ## Verteilungen
 ### Zone 1 Masse
