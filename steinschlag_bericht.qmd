@@ -18,11 +18,41 @@ library(ggplot2)
 
 # Problem
 
+Die Kantonsstrasse nach Schiers GB ist von Steinschlägen betroffen. Um die Sicherheit der Verkehrsteilnehmer zu gewährleisten, wurde im Auftrag des Kantonsingenieurs diese Risikoanalyse erstellt.
+
+An zwei Stellen des Hangs fallen täglich Steine herunter. Bevor diese die Strasse erreichen, werden sie von Fangnetzen aufgehalten. Diese Netze können eine bestimmte Menge an Energie von herabfallenden Steinen aufnehmen. Wenn jedoch Steine in den Netzen liegen, verringert sich ihre Haltekraft. Die Netze werden täglich geräumt. Durch die Abnutzung der Netze hat sich die Stabilität beeinträchtigt und das Risiko erhöht.
+
+Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist. Diese Analyse soll die Basis für die Entscheidung des Kantonsingenieurs bilden.
+
 \newpage
 
 # Wahrscheinlichkeitsmodellierung
-## Zufallsvariablen 
-## 
+
+Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfalls ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche eine Wahrscheinlichkeit von 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
+
+\newpage
+## Zufallsvariablen
+
+Im ersten Schritt muss ein Todesfall simuliert und die Schritte bis zu diesem Ereignis analysiert werden, um die relevanten Variablen zu identifizieren. 
+
+Ein Steinschlag mit einer so grossen Energie, dass die Netze reissen, ist erforderlich, damit eine Verkehrsperson auf dieser Strasse ums Leben kommen könnte. Ausserdem muss sich während dieses durchbrechenden Steinschlags ein Fahrer in der Todeszone befinden. Die Todeszone bezeichnet den Bereich, in dem eine Reaktion nicht mehr möglich ist und ein Zusammenprall unausweichlich ist.
+
+Zunächst sind die Umstände zu eruieren, unter denen ein Steinschlag ein Netz durchbrechen kann. Zu diesem Zweck wurden durch Expertisen folgende Kriterien anhand gesammelten Daten definiert.
+
+- Ein Steinschlag bricht durch, wenn die Energie 1200 kJ übersteigt. 
+- Ebenso reissen die Netze, wenn das Gewicht der bereits im Netz befindlichen Steine, also der vorherigen Steinschlägen, über 2000 kg beträgt. In diesem Fall erfolgt ein Reissen der Netze bereits bei einem Steinschlag von 600 kJ. 
+- Die Entfernung der Steine im Netz erfolgt durch ein vor Ort stationiertes Team, welches spätestens alle 24 Stunden tätig wird.
+
+Somit müssen folgende Eigenschaften eines Steinschlags berücksichtigt werden, um die Wahrscheinlichkeit eines Durchbruchs zu definieren:
+
+-  Geschwindigkeit und Masse der Steinschläge: 
+Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. Die Formel dafür lautet: 
+
+- Die zeitlichen Abstände zwischen den Steinschlägen und deren Masse: Diese Informationen sind notwendig, um herauszufinden, wie viele Steine sich noch im Netz befinden könnten und welche Masse sie haben.
+
+Um diese beiden Aspekte zu ermitteln, benötigen wir Daten über die Masse, Geschwindigkeit und zeitlichen Abständen der Steine. Experten und Geologen haben diese Daten in den letzten Monaten bei den vorkommenden Steinschlägen gesammelt und für die Modellierung zur Verfügung gestellt. Diese Daten bilden die Grundlage für diese Analyse.
+
+In den folgenden Abschnitten wird die Berechnung bis zum Durchbrechen eines Fangnetzes durch einen Steinschlag behandelt. Die Todeszone wird am Schluss der Analyse bei der Gesamtkalkulation berücksichtigt.
 
 ## Verteilungen
 
