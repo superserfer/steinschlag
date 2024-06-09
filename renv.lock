@@ -19,6 +19,11 @@
       "Version": "1.1-11",
       "Source": "Repository"
     },
+    "future.apply": {
+      "Package": "future.apply",
+      "Version": "1.11.2",
+      "Source": "Repository"
+    },
     "ggplot2": {
       "Package": "ggplot2",
       "Version": "3.5.1",
