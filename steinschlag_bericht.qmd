@@ -11,7 +11,10 @@ echo: false
 ---
 
 ```{r}
+options(scipen = 999)
+
 library(ggplot2)
+library(future.apply)
 ```
 
 \newpage
@@ -68,6 +71,7 @@ library(tidyverse)
 library(fitdistrplus)
 library(univariateML)
 library(MASS)
+library(dplyr)
 
 # Read Data
 zone_raw_1 <- read.csv("resources/out_1.csv")
@@ -111,6 +115,7 @@ mass.unif_1 <- fitdist(zone_1$masse, "unif")
 mass.lnorm_1 <- fitdist(zone_1$masse, "lnorm")
 mass.weibull_1 <- fitdist(zone_1$masse, "weibull")
 mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
+zone_1_mass <- mass.weibull_1
 ```
 
 ```{r, echo = FALSE}
@@ -159,6 +164,8 @@ velocity.lnorm_1 <- fitdist(zone_1$velocity, "lnorm")
 velocity.gamm_1 <- fitdist(zone_1$velocity, "gamma")
 velocity.weibull_1 <- fitdist(zone_1$velocity, "weibull")
 velocity.legend_1 <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_1_velocity <- velocity.norm_1
+
 ```
 
 ```{r, echo = FALSE}
@@ -190,6 +197,8 @@ time_diff.norm_1 <- fitdist(time_diff_1$stunden, "norm")
 time_diff.unif_1 <- fitdist(time_diff_1$stunden, "unif")
 time_diff.expo_1 <- fitdist(time_diff_1$stunden, "exp")
 time_diff.legend_1 <- c("Normal", "Unif", "Expo")
+
+zone_1_time <- time_diff.expo_1
 ```
 
 ```{r, echo = FALSE}
@@ -246,7 +255,7 @@ mass.lnorm <- fitdist(zone$masse, "lnorm")
 mass.gamm <- fitdist(zone$masse, "gamma")
 mass.weibull <- fitdist(zone$masse, "weibull")
 mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
-
+zone_2_mass <- mass.expo
 ```
 
 
@@ -284,6 +293,7 @@ velocity.lnorm <- fitdist(zone$velocity, "lnorm")
 velocity.gamm <- fitdist(zone$velocity, "gamma")
 velocity.weibull <- fitdist(zone$velocity, "weibull")
 velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_2_velocity <- velocity.weibull
 ```
 
 
@@ -321,6 +331,7 @@ time_diff.lnorm <- fitdist(time_diff$stunden, "lnorm")
 time_diff.gamm <- fitdist(time_diff$stunden, "gamma")
 time_diff.weibull <- fitdist(time_diff$stunden, "weibull")
 time_diff.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_2_time <- time_diff.gamm
 ```
 
 
@@ -354,24 +365,23 @@ Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die genau
 ## Generieren
 
 ```{r}
-amount_iteration <- 1e5
+amount_iteration <- 1e7
 ```
 
 Das Generieren der Daten wurde in R umgesetzt. Dabei wurden die gewählten Verteilungen gewählt, welche im Kapitel [Verteilungen](#Verteilungen) gewählt wurden. Es wurde sich dafür entschieden die Anzahl Steinschläge auf **`r amount_iteration`** Interation festzulegen.
 
 ```{r}
-#| echo: true
 set.seed(8128) # The 4. perfect number
 zone_1_generated = data.frame(
-  mass = runif(amount_iteration, min=0, max=1),
-  velocity = runif(amount_iteration, min=0, max=1),
-  time_diff = runif(amount_iteration, min=0, max=1)
+  mass = rweibull(amount_iteration, shape = zone_1_mass$estimate[1], scale = zone_1_mass$estimate[2]),
+  velocity = rnorm(amount_iteration, mean = zone_1_velocity$estimate[1], sd = zone_1_velocity$estimate[2]),
+  time_diff = rexp(amount_iteration, rate = zone_1_time$estimate[1])
 )
 
 zone_2_generated = data.frame(
-  mass = runif(amount_iteration, min=0, max=1),
-  velocity = runif(amount_iteration, min=0, max=1),
-  time_diff = runif(amount_iteration, min=0, max=1)
+  mass = rexp(amount_iteration, rate = zone_2_mass$estimate[1]),
+  velocity = rweibull(amount_iteration, shape = zone_2_velocity$estimate[1], scale = zone_2_velocity$estimate[2]),
+  time_diff = rgamma(amount_iteration, shape = zone_2_time$estimate[1], rate = zone_2_time$estimate[2])
 )
 ```
 
@@ -382,8 +392,6 @@ E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
 $$\newline
 
 ```{r}
-#| echo: true
-
 zone_1_generated$kin_energy = 
   zone_1_generated$mass * zone_1_generated$velocity^2 * 0.5 / 1000
 
@@ -398,6 +406,35 @@ zone_2_generated$kin_energy =
 Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert.
 
 Um die Masse im Netz bei einem Steinschlag zu berechnen, wird rekursiv durch alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, gegangen und die Masse summiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
+
+```{r}
+plan(multisession)
+has_net_exceed_maxium <- function(index, mass_net, time_since_emptying, df) {
+  if (index == 1) {
+    return(FALSE)
+  }
+  time_since_emptying <- time_since_emptying + df$time_diff[index]
+  if (time_since_emptying > 24) {
+    return(FALSE)
+  }
+  mass_net <- mass_net + df$mass[index - 1]
+  if (mass_net >= 2000) {
+    return(TRUE)
+  }
+  return(has_net_exceed_maxium(index-1, mass_net, time_since_emptying, df))
+}
+
+monte_carlo <- function(df) {
+  future_lapply(1:amount_iteration, function(i) {
+  return(df$kin_energy[i] >= 1200 || (df$kin_energy[i] >= 600 && has_net_exceed_maxium(i, 0, 0, df)))
+    }) %>% 
+    unlist() %>% 
+    sum()
+}
+
+monte_carlo_zone_2 <- monte_carlo(zone_2_generated)
+monte_carlo_zone_1 <- monte_carlo(zone_1_generated)
+```
 
 Mit diesen Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, auszurechnen. Dafür verwenden wir folgende Formel.
 
@@ -422,14 +459,41 @@ Mit der Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, ein Auto anwesend i
 $$
 P_{\text{Tödlicher Unfall pro Jahr}} = P_{\text{Auto anwesend}} \times P_{\text{Netz reisst}} \times \text{ Durchschnittliche Steinschläge pro Jahr}
 $$
+```{r}
+prob_auto_presenc <- 7/300
 
-## Aussagekraft der Simulation
+monte_carlo_zone_1.prop_net_fails <- monte_carlo_zone_1 / amount_iteration
+monte_carlo_zone_2.prop_net_fails <- monte_carlo_zone_2 / amount_iteration
 
-// TODO: mit Varianz und so. Könnte noch triky werden.
+monte_carlo_zone_1.simulation_time <- sum(zone_1_generated$time_diff) / 24 / 365
+monte_carlo_zone_2.simulation_time <- sum(zone_2_generated$time_diff) / 24 / 365
+
+monte_carlo_zone_1.steinschlaege_per_year <- amount_iteration / monte_carlo_zone_1.simulation_time
+monte_carlo_zone_2.steinschlaege_per_year <- amount_iteration / monte_carlo_zone_2.simulation_time
+
+monte_carlo_zone_1.prob_per_year <- monte_carlo_zone_1.steinschlaege_per_year * prob_auto_presenc * monte_carlo_zone_1.prop_net_fails
+monte_carlo_zone_2.prob_per_year <- monte_carlo_zone_2.steinschlaege_per_year * prob_auto_presenc * monte_carlo_zone_2.prop_net_fails
+
+prob_per_year <- monte_carlo_zone_1.prob_per_year + monte_carlo_zone_2.prob_per_year - (monte_carlo_zone_1.prob_per_year * monte_carlo_zone_2.prob_per_year)
+```
 
 \newpage
-
 # Ergebniss
+## Zone 1
+Die Simulation von `r amount_iteration` Steinschlägen in der Zone 1 ergab, dass `r monte_carlo_zone_1` Steinschläge durch das Sicherheitsnetz gingen. Dabei wurden  `r monte_carlo_zone_1.simulation_time` Jahre an Steinschlägen simuliert. Wobei jährlich im Schnitt `r monte_carlo_zone_1.steinschlaege_per_year` Steinschläge herunterkommen. Daraus resultiert, eine Wahrscheinlichkeit von **`r monte_carlo_zone_1.prob_per_year`** pro Jahr, dass ein Unfall passiert.
+
+## Zone 2
+Die Simulation von `r amount_iteration` Steinschlägen in der Zone 2 ergab, dass `r monte_carlo_zone_2` Steinschläge durch das Sicherheitsnetz gingen. Dabei wurden  `r monte_carlo_zone_2.simulation_time` Jahre an Steinschlägen simuliert. Wobei jährlich im Schnitt `r monte_carlo_zone_2.steinschlaege_per_year` Steinschläge herunterkommen. Daraus resultiert, eine Wahrscheinlichkeit von **`r monte_carlo_zone_2.prob_per_year`** pro Jahr, dass ein Unfall passiert.
+
+## Gesammt
+Das Verbinden der Wahrscheinlichkeiten, dass ein Unfall in Folge Steinschläge auf der Kantonsstrasse. Wird mit der folgenden Formel berechnet.
+
+$$
+P_{\text{Todesfall}}(P_{\text{Todesfall Zone 1}} \cup P_{\text{Todesfall Zone 2}})
+$$
+
+Daraus resultiert eine Wahrscheinlichkeit eines Unfalls in Folge eines Steinschlages von **`r prob_per_year`**
+
 
 \newpage
 
