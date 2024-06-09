@@ -46,7 +46,7 @@ Zunächst sind die Umstände zu eruieren, unter denen ein Steinschlag ein Netz d
 Somit müssen folgende Eigenschaften eines Steinschlags berücksichtigt werden, um die Wahrscheinlichkeit eines Durchbruchs zu definieren:
 
 -  Geschwindigkeit und Masse der Steinschläge: 
-Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. Die Formel dafür lautet: 
+Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. 
 
 - Die zeitlichen Abstände zwischen den Steinschlägen und deren Masse: Diese Informationen sind notwendig, um herauszufinden, wie viele Steine sich noch im Netz befinden könnten und welche Masse sie haben.
 
@@ -62,13 +62,13 @@ Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Davor wird
 
 ### Wahl der Verteilungen
 
-Miit dem fitdistr-Package können die verschiedenen Verteilungen auf die Daten angewendet werden . 
+Mit dem fitdistr-Package können die verschiedenen Verteilungen auf die Daten angewendet werden . 
 
 Alle verwendeten Verteilungen durchlaufen dann einen Prozess, in dem die am besten geeignete Verteilung ermittelt wird. Der Prozess ist folgend durchgeführt worden:
 
 - Zunächst wird ein Histogramm der Daten mit den Verteilungen als Linien betrachtet. Die Verteilungen, welche den Balken besser folgen sind eher geeignet.
 
-- In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell 
+- In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell besser geignet.
 
 - Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von den verschiedenen Verteilungen.
 
@@ -80,7 +80,7 @@ In Fällen, in denen die Verteilungen ähnlich sind und eine Entscheidung schwie
 
 -Größere Massen und grössere Geschwindigkeit bedeuten ein höheres Risiko, daher ist es wichtiger, die grössten Daten auf den QQ-, CDF- und PP-Plots abzudecken, als kleinere Daten.
 
-- Bei den Zeitlichen Abstände sind kleinere Daten wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine größere Gefahr darstellen. In diesem Fall ist es wichtiger, die kleineren Daten in den QQ-, CDF- und PP-Plots abzudecken, als die grossen.
+- Bei den Zeitlichen Abständen sind kleinere Daten wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine größere Gefahr darstellen. In diesem Fall ist es wichtiger, die kleineren Daten in den QQ-, CDF- und PP-Plots abzudecken, als die grossen.
 
 Im nächsten Abschnitt befindet sich die Anwendung dieses Prozess auf beide Hänge. 
 
@@ -294,8 +294,6 @@ Zone2:
 - Masse: Exponentialverteilung
 - Geschwindigkeit: Weibullverteilung
 - Zeitliche Abstände: Gammaverteilung
-
-
 
 \newpage
 
