@@ -23,6 +23,7 @@ Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist. Diese An
 
 Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfalls ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche einen Wert von unter 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
 
+\newpage
 ## Zufallsvariablen
 
 Im ersten Schritt muss ein Todesfall simuliert und die Schritte bis zu diesem Ereignis analysiert werden, um die relevanten Variablen zu identifizieren. 
