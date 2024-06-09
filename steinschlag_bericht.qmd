@@ -362,3 +362,5 @@ $$
 \newpage
 
 # Empfehlung
+
+Auf Basis der durchgeführten ANalyse und der daraus resultierenden niedrigen jährlichen Warscheinlichkeit von Todesfällen, kann die Strasse ohne weiteres weiterhin offen bleiben.
