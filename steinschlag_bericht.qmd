@@ -17,6 +17,12 @@ toc-title: "Inhaltsverzeichnis"
 ## Zufallsvariablen 
 ## 
 
+## Verteilungen
+
+Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die drei oben genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
+
+Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Dafür wird für jede Kategorie eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können die Eigenschaften der Daten anhand einem theoretisches Modell widerspiegelt werden und Fälle nachstellen, die der Vergangenheit am nächsten kommen.
+
 ### Verteilungen Zone 1
 
 ```{r, echo = FALSE}
@@ -189,6 +195,7 @@ time_diff <- data.frame(
   stunden = as.numeric(diff(zone$datetime)))
 ```
 
+### Verteilungen Zone 2
 ### Zone 2 Masse
 
 Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl. Der Vorschlag von UnivariateML ist die Exponentialverteilung.
