@@ -31,7 +31,7 @@ Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist. Diese An
 
 # Wahrscheinlichkeitsmodellierung
 
-Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfalls ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche eine Wahrscheinlichkeit von 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
+Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfall ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche eine Jährliche Wahrscheinlichkeit von 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
 
 \newpage
 ## Zufallsvariablen
@@ -42,14 +42,14 @@ Ein Steinschlag mit einer so grossen Energie, dass die Netze reissen, ist erford
 
 Zunächst sind die Umstände zu eruieren, unter denen ein Steinschlag ein Netz durchbrechen kann. Zu diesem Zweck wurden durch Expertisen folgende Kriterien anhand gesammelten Daten definiert.
 
-- Ein Steinschlag bricht durch, wenn die Energie 1200 kJ übersteigt. 
-- Ebenso reissen die Netze, wenn das Gewicht der bereits im Netz befindlichen Steine, also der vorherigen Steinschlägen, über 2000 kg beträgt. In diesem Fall erfolgt ein Reissen der Netze bereits bei einem Steinschlag von 600 kJ. 
+- Ein Steinschlag bricht durch, wenn die Energie 1200 kNm übersteigt. 
+- Ebenso reissen die Netze, wenn das Gewicht der bereits im Netz befindlichen Steine, also der vorherigen Steinschlägen, über 2000 kg beträgt. In diesem Fall erfolgt ein Reissen der Netze bereits bei einem Steinschlag von 600 kNm. 
 - Die Entfernung der Steine im Netz erfolgt durch ein vor Ort stationiertes Team, welches spätestens alle 24 Stunden tätig wird.
 
 Somit müssen folgende Eigenschaften eines Steinschlags berücksichtigt werden, um die Wahrscheinlichkeit eines Durchbruchs zu definieren:
 
 -  Geschwindigkeit und Masse der Steinschläge: 
-Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. Die Formel dafür lautet: 
+Diese sind erforderlich, um die Energie eines Steinschlags zu berechnen. 
 
 - Die zeitlichen Abstände zwischen den Steinschlägen und deren Masse: Diese Informationen sind notwendig, um herauszufinden, wie viele Steine sich noch im Netz befinden könnten und welche Masse sie haben.
 
@@ -59,11 +59,33 @@ In den folgenden Abschnitten wird die Berechnung bis zum Durchbrechen eines Fang
 
 ## Verteilungen
 
-Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die drei oben genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
+Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten Anzahl an Ereignissen keine verlässlichen Aussagen über die aktuelle Gefahr ermöglichen, müssen Fälle nachgestellt werden und zwar möglichst viele. Um eine solche Simulation korrekt durchzuführen, werden die vorhandenen Daten der Steinschläge in die genannten Variablen Masse, Geschwindigkeit und zeitliche Abstände unterteilt.
 
-Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Dafür wird für jede Kategorie eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können die Eigenschaften der Daten anhand einem theoretisches Modell widerspiegelt werden und Fälle nachstellen, die der Vergangenheit am nächsten kommen.
+Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Davor wird aber jeder Variable eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können Fälle repdorduziert werden, welche die Eigenschaften der Daten anhand den gewählten theoretischen Modellen  widerspiegelen. Im nächsten Schritt werden den Variablen Verteilungen zugeteilt. Da zwei stellen an der Strasse von Steinschläge betroffen sind, müssen diese getrennt betrachtet werden, Beide Hänge haben ihre eigenen Eigenschaften bezüglich Masse, Geschwindigkeit und den Zeitlichen Unterscherschiede.
 
-### Verteilungen Zone 1
+### Wahl der Verteilungen
+
+Mit dem fitdistr-Package können die verschiedenen Verteilungen auf die Daten angewendet werden. 
+
+Alle verwendeten Verteilungen durchlaufen dann einen Prozess, in dem die am besten geeignete Verteilung ermittelt wird. Der Prozess ist folgend durchgeführt worden:
+
+- Zunächst wird ein Histogramm der Daten mit den Verteilungen als Linien betrachtet. Die Verteilungen, welche den Balken besser folgen sind eher geeignet.
+
+- In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell besser geignet.
+
+- Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von den verschiedenen Verteilungen.
+
+Diese drei Schritte allein erlauben noch keine endgültige Entscheidung darüber, welche Verteilung am besten geeignet ist. Sie dienen jedoch dazu, die Auswahl der möglichen Verteilungen einzuschränken und eine Orientierung zu geben, mit welchen Daten gearbeitet wird. 
+
+- Nachdem nun einige Verteilungen ausgeschlossen werden konnten, kann man sich den möglichen Verteilungen zuwenden. Man betrachtet die Verteilungen anhand von CDF-, QQ- und PP-Plots. Die Punkte in den Plots stellen die vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten, welche die Verteilung erzeugt, auf der X-Achse. Danach kann eine endgültige Entscheidung getroffen werden.
+
+In Fällen, in denen die Verteilungen ähnlich sind und eine Entscheidung schwierig ist, sollte Folgendes berücksichtigt werden.
+
+-Grössere Massen und grössere Geschwindigkeit bedeuten ein höheres Risiko, daher ist es wichtiger, die grössten Daten auf den QQ-, CDF- und PP-Plots abzudecken, als kleinere Daten.
+
+- Bei den Zeitlichen Abständen sind kleinere Daten wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine grössere Gefahr darstellen. In diesem Fall ist es wichtiger, die kleineren Daten in den QQ-, CDF- und PP-Plots abzudecken, als die grossen.
+
+Im nächsten Abschnitt befindet sich die Anwendung dieses Prozess auf beide Hänge. 
 
 ```{r, echo = FALSE}
 
@@ -97,16 +119,15 @@ time_diff_1 <- data.frame(
 
 ### Zone 1 Masse
 
-Zunächst wird der Hang 1 hinsichtlich der Masse untersucht.
+Zunächst wird die Zone 1 hinsichtlich Masse untersucht.
+Beim Ausschlussverfahren zeigt sich, dass nur die Weibull- und die Lognormalverteilung in Frage kommen könnten.
+Der Vorschlag von UnivariateML ist die Lognormalverteilung. 
 
-Zuerst werden  mit dem fitdistr-Package verschiedene Verteilungen auf den Datensatz der Masse angewendet um diese dann zu analysieren. 
+Vergleicht man die Masse am Zone 1 zwischen der Lognormalverteilung und der Weibullverteilung, so würde die Lognormalverteilung insgesamt besser die Daten abdecken, nur das letzte Quantil im QQ-Plot weicht deutlich ab. 
 
-Alle Verteilungen werden dann mit einem Histogramm welches die Daten wiederspiegelt angezeigt. In einem zweiten Plot, der ein Cullen-Frey-Diagramm darstellt, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell kompatibler.
+Bei der Weibullverteilung weichen die Punkte ebenfalls von der Linie ab, aber insbesondere die letzten Quantile passen zu dieser Verteilung. 
 
-Diese beiden Vergleiche allein erlauben noch keine endgültige Entscheidung darüber, welche Verteilung am besten geeignet ist. Sie dienen jedoch dazu, die Auswahl der möglichen Verteilungen einzuschränken und eine Orientierung zu geben, mit welchen Daten gearbeitet wird. 
-
-Dabei zeigt sich, dass nur die Weibull- und die Lognormalverteilung in Frage kommen könnten.
-
+Trotz kleiner Abweichungen wird die Weibull-Verteilung zugewiesen. Gemäss letztem Schritt im Prozess ist es wichtig, dass die grössten Massen gedeckt sind. 
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -123,27 +144,13 @@ zone_1_mass <- mass.weibull_1
 denscomp(list(mass.norm_1, mass.unif_1, mass.lnorm_1, mass.weibull_1), legendtext = mass.legend_1, plotstyle = "ggplot")
 ```
 
-Diese werden in einem Goodness-of-Fit-Test verglichen. Dazu müssen die CDF-, QQ- und PP-Plots betrachtet werden. Die Punkte in den Plots stellen den Vergleich der vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten auf der X Achse, welche die Verteilung erzeugt. 
-
-Der QQ-Plot vergleicht die Quantile, der PP-Plot die Perzentile und der CDF-Plot die kumulative Verteilungsfunktion.
-Wie gut eine Verteilung zu den Daten passt, erkennt man an den Linien. Wenn die Punkte der Gegenüberstellung auf der Linie liegen, passt die Verteilung gut zu den Daten.
-
-Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von Verteilungen 
-
-In diesem Fall wird die Lognormalverteilung empfohlen.
-
-
-Vergleicht man die Masse am Hang 1 zwischen der Lognormalverteilung und der Weibullverteilung, so liegt die Lognormalverteilung nahe an der Linie, nur das letzte Quantil im QQ-Plot weicht deutlich ab. Bei der Weibullverteilung weichen die Punkte ebenfalls von der Linie ab, aber insbesondere das letzte Quantil liegt nahe an der Linie.
-
-Trotz kleiner Abweichungen wird die Weibull-Verteilung gewählt. Größere Massen bedeuten ein höheres Risiko, daher ist es wichtiger, die schwersten Massen mit der Verteilung abzudecken.
-
-Dieser Vorgang wird für die Auswahl bei allen Variablen wiederholt.
-
 ### Zone 1 Geschwindigkeit
 
-Durch die erste Analyse stellt sich heraus, dass viele Verteilungen passen könnten, Normalverteilung, Weibull, Exponential, Gamma oder Lognormal. 
+Durch die erste Analyse filtert sich heraus, dass die Normal-, Weibull-, Exponential-, Gamma-, und Lognormalverteilung passen könnten.
 
 Der Vorschlag von UnivariateML ist die Normalverteilung.
+
+Nach dem Abgleich der Plots ist klar, dass die Normalverteilung am besten passt. Die Punkte verlaufen fast durchgehend entlang der Linie. Besonders in den oberen Werten ist diese Verteilung am nächsten bei der Linie. Daher wird die Normalverteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -163,11 +170,13 @@ zone_1_velocity <- velocity.norm_1
 denscomp(list(velocity.norm_1, velocity.expo_1, velocity.unif_1, velocity.lnorm_1, velocity.gamm_1, velocity.weibull_1), legendtext = velocity.legend_1, plotstyle = "ggplot")
 ```
 
-Nach dem Abgleich der Plots ist klar, dass die Normalverteilung am genauesten passt. Die Punkte verlaufen fast durchgehend entlang der Linie, was auf eine gute Übereinstimmung mit den Daten hinweist. Besonders in den oberen Quantilen ist diese Verteilung am nächsten bei der Linie.
-
 ### Zone 1 Zeitabstände
 
-Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten. Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten. 
+
+Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+
+Die Auswertung der Plots zeigt deutlich, dass die Exponentialverteilung am besten passt. Die kleineren Werte werden bei der Exponentialverteilung besser gedeckt. Die anderen Verteilungen weichen fest von der Linie ab. Daher wird die Exponentialverteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -184,9 +193,6 @@ zone_1_time <- time_diff.expo_1
 denscomp(list(time_diff.norm_1, time_diff.unif_1, time_diff.expo_1), legendtext = time_diff.legend_1, plotstyle = "ggplot")
 ```
 
-Die Auswertung der Plots zeigt deutlich, dass die Exponentialverteilung am besten passt.
-
-Die kleineren Quantile werden bei der Exponentialverteilung besser gedeckt. Bei den Zeitlichen Abstände sind die kleineren Quantile wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine größere Gefahr darstellen.
 
 ```{r, echo = FALSE}
 # Read Data
@@ -208,10 +214,13 @@ time_diff <- data.frame(
   stunden = as.numeric(diff(zone$datetime)))
 ```
 
-### Verteilungen Zone 2
 ### Zone 2 Masse
 
-Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl. Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl. 
+
+Der Vorschlag von UnivariateML ist die Exponentialverteilung.
+
+Nach Bewertung der Plots wird die Exponentialverteilung zugewiesen. Gamma- und Weibullverteilungen sind zwar ähnlich wie die Exponentialverteilung, decken aber die oberen Werte schlechter ab. Lognormal liegt im Allgemeinen näher an der Linie, berücksichtigt aber den höchsten Wert nicht.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -229,15 +238,16 @@ zone_2_mass <- mass.expo
 ```{r, echo = FALSE}
 # Plot different Distributions for mass
 denscomp(list(mass.norm, mass.expo, mass.unif, mass.lnorm, mass.gamm, mass.weibull), legendtext = mass.legend, plotstyle = "ggplot")
-```
 
-Nach Bewertung der Plots wird die Exponentialverteilung gewählt. Gamma, Weibull sind ähnlich wie die Exponentialverteilung, decken aber die oberen Quantile schlechter ab. Lognormal liegt im Allgemeinen näher an der Linie, lässt aber das letzte Quantil aus. Auch am zweiten Hang ist die größere Masse ausschlaggebender.
+```
 
 ### Zone 2 Geschwindigkeit
 
-Die Diagramme zeigen, dass viele Verteilungen ausgewählt werden können. Normal, Lognormal, Weibull und Gamma stehen zur Auswahl.
+Beim Ausschlusserfahren erkennt man, dass viele Verteilungen ausgewählt werden könnten. Normal-, Lognormal-, Weibull- und Gammaverteilung stehen zur Auswahl.
 
 Der Vorschlag von UnivariateML ist die Weibullverteilung.
+
+Die Auswertung zeigt, dass nur die Weibullverteilung die Daten umfangreich decken kann. Daher wird diese Verteilung zugewiesen.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -257,12 +267,13 @@ zone_2_velocity <- velocity.weibull
 denscomp(list(velocity.norm, velocity.expo, velocity.unif, velocity.lnorm, velocity.gamm, velocity.weibull), legendtext = velocity.legend, plotstyle = "ggplot")
 ```
 
-Die Auswertung zeigt, dass nur die Weibullverteilung die Daten umfangreich decken kann. Daher wird diese Verteilung gewählt.
-
 ### Zone 2 Zeitabstände
 
-In diesem Fall erkennt man ebenfalls, dass die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl stehen. 
-Der Vorschlag von UnivariateML ist die Gammaverteilung
+Nach der ersten Prüfung kann man die Auswahl auf Weibull-, Gamma-, Exponential- und Lognormalverteilung reduzieren. 
+
+Der Vorschlag von UnivariateML ist die Gammaverteilung.
+
+Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die einzigen Modelle sind, welche in Frage kommen. Die korrekte Verteilung in diesem Fall ist die Gammaverteilung, da diese sowohl der Empfehlung von UnivariateML entspricht als auch die unteren Werte besser abdeckt.
 
 ```{r, echo = FALSE}
 # Calc Distribution
@@ -279,16 +290,28 @@ zone_2_time <- time_diff.gamm
 
 ```{r, echo = FALSE}
 # Plot different Distributions for time difference
-
 denscomp(list(time_diff.norm, time_diff.expo, time_diff.unif, time_diff.lnorm, time_diff.gamm, time_diff.weibull), legendtext = time_diff.legend, plotstyle = "ggplot")
 ```
 
-Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die genausten Modelle sind. Gewählt wird hier die Gammaverteilung, da diese sowohl der Empfehlung von UnivariateML entspricht als auch die unteren Quantile im Vergleich besser abdeckt.
+### Gewählte Verteilungen 
 
+Die folgenden Verteilungen wurden den Variablen zugeordnet:
+
+Zone 1
+- Masse: Weibullverteilung
+- Geschwindigkeit: Normalverteilung
+- Zeitliche Abstände: Exponentialverteilung
+
+Zone 2:
+- Masse: Exponentialverteilung
+- Geschwindigkeit: Weibullverteilung
+- Zeitliche Abstände: Gammaverteilung
 
 \newpage
 
 # Simulation
+
+Nun sind den Zufallsvariablen Verteilungen zugeordnet. Der nächste Schritt ist die Simulation.
 
 ## Generieren
 
@@ -296,7 +319,7 @@ Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die genau
 amount_iteration <- 1e7
 ```
 
-Das Generieren der Daten wurde in R umgesetzt. Dabei wurden die gewählten Verteilungen gewählt, welche im Kapitel [Verteilungen](#Verteilungen) gewählt wurden. Es wurde sich dafür entschieden die Anzahl Steinschläge auf **`r amount_iteration`** Interation festzulegen.
+Das Generieren der Daten wurde ebenfalls in R umgesetzt. Dabei wurden die gewählten Verteilungen vom vorherigen Kapitel übernommen. [Verteilungen](#Verteilungen). Die Anzahl Steinschläge sind auf **`r amount_iteration`** Interation festgelegt worden.
 
 ```{r}
 set.seed(8128) # The 4. perfect number
@@ -313,7 +336,7 @@ zone_2_generated = data.frame(
 )
 ```
 
-Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel dafür berechnet und in Kilo Newton Meter umgewandelt.
+Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel berechnet und in Kilo Newton Meter umgewandelt.
 
 $$
 E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
@@ -331,9 +354,13 @@ zone_2_generated$kin_energy =
 
 ## Wahrscheinlichkeitsberechnung
 
+Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen.
+
+Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst je Steinschlag, auszurechnen. Dafür verwenden wir folgende Formel.
+
 Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert.
 
-Um die Masse im Netz bei einem Steinschlag zu berechnen, wird rekursiv durch alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, gegangen und die Masse summiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
+Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
 
 ```{r}
 plan(multisession)
@@ -370,7 +397,7 @@ $$
 P_{\text{Netz reisst}} = \frac{\text{Anzahl Netz Versagen}}{\text{Anzahl Steinschläge}} 
 $$
 
-Das ein Steinschlag in einem Unfall endet muss zusätzlich ein Auto vor Ort sein. Um die Wahrscheinlichkeit zu berechnen wird die Zeit Benötigt, welches ein Auto braucht um für einen Möglichen Steinschlag zu bremsen. Dies lässt sich aus dem Bremsweg, was sich bei einer [Gefahrenbesmung bei 18m](https://www.adac.de/verkehr/rund-um-den-fuehrerschein/erwerb/anhalteweg-berechnen/) liegt, bei einer Geschwindigkeit von 60 km/h und der Geschwindigkeit, wie folgt berechnen.
+Das ein Steinschlag in einem Todesfall endet muss zusätzlich ein Auto sich in der Todeszone befinden. Um die Wahrscheinlichkeit dafür zu berechnen wird die Zeit benötigt, welches ein Auto benötigt um für einen Möglichen Steinschlag zu bremsen. Dies lässt sich aus dem Bremsweg, was sich bei einer [Gefahrenbesmung bei 18m](https://www.adac.de/verkehr/rund-um-den-fuehrerschein/erwerb/anhalteweg-berechnen/) liegt, bei einer Geschwindigkeit von 60 km/h und der Geschwindigkeit, wie folgt berechnen.
 
 $$
 t = \frac{2s}{v} \Rightarrow \frac{2\times18m}{16.\overline{6}m/s} \approx 2.16s 
@@ -387,41 +414,14 @@ Mit der Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, ein Auto anwesend i
 $$
 P_{\text{Tödlicher Unfall pro Jahr}} = P_{\text{Auto anwesend}} \times P_{\text{Netz reisst}} \times \text{ Durchschnittliche Steinschläge pro Jahr}
 $$
-```{r}
-prob_auto_presenc <- 7/300
 
-monte_carlo_zone_1.prop_net_fails <- monte_carlo_zone_1 / amount_iteration
-monte_carlo_zone_2.prop_net_fails <- monte_carlo_zone_2 / amount_iteration
+## Aussagekraft der Simulation
 
-monte_carlo_zone_1.simulation_time <- sum(zone_1_generated$time_diff) / 24 / 365
-monte_carlo_zone_2.simulation_time <- sum(zone_2_generated$time_diff) / 24 / 365
-
-monte_carlo_zone_1.steinschlaege_per_year <- amount_iteration / monte_carlo_zone_1.simulation_time
-monte_carlo_zone_2.steinschlaege_per_year <- amount_iteration / monte_carlo_zone_2.simulation_time
-
-monte_carlo_zone_1.prob_per_year <- monte_carlo_zone_1.steinschlaege_per_year * prob_auto_presenc * monte_carlo_zone_1.prop_net_fails
-monte_carlo_zone_2.prob_per_year <- monte_carlo_zone_2.steinschlaege_per_year * prob_auto_presenc * monte_carlo_zone_2.prop_net_fails
-
-prob_per_year <- monte_carlo_zone_1.prob_per_year + monte_carlo_zone_2.prob_per_year - (monte_carlo_zone_1.prob_per_year * monte_carlo_zone_2.prob_per_year)
-```
+// TODO: mit Varianz und so. Könnte noch triky werden.
 
 \newpage
+
 # Ergebniss
-## Zone 1
-Die Simulation von `r amount_iteration` Steinschlägen in der Zone 1 ergab, dass `r monte_carlo_zone_1` Steinschläge durch das Sicherheitsnetz gingen. Dabei wurden  `r monte_carlo_zone_1.simulation_time` Jahre an Steinschlägen simuliert. Wobei jährlich im Schnitt `r monte_carlo_zone_1.steinschlaege_per_year` Steinschläge herunterkommen. Daraus resultiert, eine Wahrscheinlichkeit von **`r monte_carlo_zone_1.prob_per_year`** pro Jahr, dass ein Unfall passiert.
-
-## Zone 2
-Die Simulation von `r amount_iteration` Steinschlägen in der Zone 2 ergab, dass `r monte_carlo_zone_2` Steinschläge durch das Sicherheitsnetz gingen. Dabei wurden  `r monte_carlo_zone_2.simulation_time` Jahre an Steinschlägen simuliert. Wobei jährlich im Schnitt `r monte_carlo_zone_2.steinschlaege_per_year` Steinschläge herunterkommen. Daraus resultiert, eine Wahrscheinlichkeit von **`r monte_carlo_zone_2.prob_per_year`** pro Jahr, dass ein Unfall passiert.
-
-## Gesammt
-Das Verbinden der Wahrscheinlichkeiten, dass ein Unfall in Folge Steinschläge auf der Kantonsstrasse. Wird mit der folgenden Formel berechnet.
-
-$$
-P_{\text{Todesfall}}(P_{\text{Todesfall Zone 1}} \cup P_{\text{Todesfall Zone 2}})
-$$
-
-Daraus resultiert eine Wahrscheinlichkeit eines Unfalls in Folge eines Steinschlages von **`r prob_per_year`**
-
 
 \newpage
 
