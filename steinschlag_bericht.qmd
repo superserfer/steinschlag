@@ -11,7 +11,10 @@ echo: false
 ---
 
 ```{r}
+options(scipen = 999)
+
 library(ggplot2)
+library(future.apply)
 ```
 
 \newpage
@@ -90,6 +93,7 @@ library(tidyverse)
 library(fitdistrplus)
 library(univariateML)
 library(MASS)
+library(dplyr)
 
 # Read Data
 zone_raw_1 <- read.csv("resources/out_1.csv")
@@ -132,6 +136,7 @@ mass.unif_1 <- fitdist(zone_1$masse, "unif")
 mass.lnorm_1 <- fitdist(zone_1$masse, "lnorm")
 mass.weibull_1 <- fitdist(zone_1$masse, "weibull")
 mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
+zone_1_mass <- mass.weibull_1
 ```
 
 ```{r, echo = FALSE}
@@ -156,6 +161,8 @@ velocity.lnorm_1 <- fitdist(zone_1$velocity, "lnorm")
 velocity.gamm_1 <- fitdist(zone_1$velocity, "gamma")
 velocity.weibull_1 <- fitdist(zone_1$velocity, "weibull")
 velocity.legend_1 <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_1_velocity <- velocity.norm_1
+
 ```
 
 ```{r, echo = FALSE}
@@ -177,6 +184,8 @@ time_diff.norm_1 <- fitdist(time_diff_1$stunden, "norm")
 time_diff.unif_1 <- fitdist(time_diff_1$stunden, "unif")
 time_diff.expo_1 <- fitdist(time_diff_1$stunden, "exp")
 time_diff.legend_1 <- c("Normal", "Unif", "Expo")
+
+zone_1_time <- time_diff.expo_1
 ```
 
 ```{r, echo = FALSE}
@@ -222,7 +231,7 @@ mass.lnorm <- fitdist(zone$masse, "lnorm")
 mass.gamm <- fitdist(zone$masse, "gamma")
 mass.weibull <- fitdist(zone$masse, "weibull")
 mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
-
+zone_2_mass <- mass.expo
 ```
 
 
@@ -249,6 +258,7 @@ velocity.lnorm <- fitdist(zone$velocity, "lnorm")
 velocity.gamm <- fitdist(zone$velocity, "gamma")
 velocity.weibull <- fitdist(zone$velocity, "weibull")
 velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_2_velocity <- velocity.weibull
 ```
 
 
@@ -274,6 +284,7 @@ time_diff.lnorm <- fitdist(time_diff$stunden, "lnorm")
 time_diff.gamm <- fitdist(time_diff$stunden, "gamma")
 time_diff.weibull <- fitdist(time_diff$stunden, "weibull")
 time_diff.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
+zone_2_time <- time_diff.gamm
 ```
 
 
@@ -305,24 +316,23 @@ Nun sind den Zufallsvariablen Verteilungen zugeordnet. Der nächste Schritt ist 
 ## Generieren
 
 ```{r}
-amount_iteration <- 1e5
+amount_iteration <- 1e7
 ```
 
 Das Generieren der Daten wurde ebenfalls in R umgesetzt. Dabei wurden die gewählten Verteilungen vom vorherigen Kapitel übernommen. [Verteilungen](#Verteilungen). Die Anzahl Steinschläge sind auf **`r amount_iteration`** Interation festgelegt worden.
 
 ```{r}
-#| echo: true
 set.seed(8128) # The 4. perfect number
 zone_1_generated = data.frame(
-  mass = runif(amount_iteration, min=0, max=1),
-  velocity = runif(amount_iteration, min=0, max=1),
-  time_diff = runif(amount_iteration, min=0, max=1)
+  mass = rweibull(amount_iteration, shape = zone_1_mass$estimate[1], scale = zone_1_mass$estimate[2]),
+  velocity = rnorm(amount_iteration, mean = zone_1_velocity$estimate[1], sd = zone_1_velocity$estimate[2]),
+  time_diff = rexp(amount_iteration, rate = zone_1_time$estimate[1])
 )
 
 zone_2_generated = data.frame(
-  mass = runif(amount_iteration, min=0, max=1),
-  velocity = runif(amount_iteration, min=0, max=1),
-  time_diff = runif(amount_iteration, min=0, max=1)
+  mass = rexp(amount_iteration, rate = zone_2_mass$estimate[1]),
+  velocity = rweibull(amount_iteration, shape = zone_2_velocity$estimate[1], scale = zone_2_velocity$estimate[2]),
+  time_diff = rgamma(amount_iteration, shape = zone_2_time$estimate[1], rate = zone_2_time$estimate[2])
 )
 ```
 
@@ -333,8 +343,6 @@ E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
 $$\newline
 
 ```{r}
-#| echo: true
-
 zone_1_generated$kin_energy = 
   zone_1_generated$mass * zone_1_generated$velocity^2 * 0.5 / 1000
 
@@ -354,6 +362,36 @@ Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische 
 
 Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
 
+```{r}
+plan(multisession)
+has_net_exceed_maxium <- function(index, mass_net, time_since_emptying, df) {
+  if (index == 1) {
+    return(FALSE)
+  }
+  time_since_emptying <- time_since_emptying + df$time_diff[index]
+  if (time_since_emptying > 24) {
+    return(FALSE)
+  }
+  mass_net <- mass_net + df$mass[index - 1]
+  if (mass_net >= 2000) {
+    return(TRUE)
+  }
+  return(has_net_exceed_maxium(index-1, mass_net, time_since_emptying, df))
+}
+
+monte_carlo <- function(df) {
+  future_lapply(1:amount_iteration, function(i) {
+  return(df$kin_energy[i] >= 1200 || (df$kin_energy[i] >= 600 && has_net_exceed_maxium(i, 0, 0, df)))
+    }) %>% 
+    unlist() %>% 
+    sum()
+}
+
+monte_carlo_zone_2 <- monte_carlo(zone_2_generated)
+monte_carlo_zone_1 <- monte_carlo(zone_1_generated)
+```
+
+Mit diesen Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, auszurechnen. Dafür verwenden wir folgende Formel.
 
 $$
 P_{\text{Netz reisst}} = \frac{\text{Anzahl Netz Versagen}}{\text{Anzahl Steinschläge}} 
@@ -388,3 +426,5 @@ $$
 \newpage
 
 # Empfehlung
+
+Auf Basis der durchgeführten ANalyse und der daraus resultierenden niedrigen jährlichen Warscheinlichkeit von Todesfällen, kann die Strasse ohne weiteres weiterhin offen bleiben.
