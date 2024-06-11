@@ -13,6 +13,7 @@ echo: false
 ```{r}
 #| warning: false
 #| message: false
+#| code-summary: "Loading Library and configure output"
 
 options(scipen = 999)
 
@@ -69,31 +70,31 @@ Da Steinschläge über einen Zeitraum von drei Monaten aufgrund der begrenzten A
 
 Dann können diese Daten anhand ihren Eigenschaften simuliert werden. Davor wird aber jeder Variable eine Wahrscheinlichkeitsverteilung zugeordnet. Durch die Zuordnung können Fälle repdorduziert werden, welche die Eigenschaften der Daten anhand den gewählten theoretischen Modellen widerspiegelen. Im nächsten Schritt werden den Variablen Verteilungen zugeteilt. Da zwei stellen an der Strasse von Steinschläge betroffen sind, müssen diese getrennt betrachtet werden, Beide Hänge haben ihre eigenen Eigenschaften bezüglich Masse, Geschwindigkeit und den Zeitlichen Unterscherschiede.
 
-### Wahl der Verteilungen
+### Wahl der Verteilungen {#wahl-der-verteilungen}
 
 Mit dem fitdistr-Package können die verschiedenen Verteilungen auf die Daten angewendet werden.
 
 Alle verwendeten Verteilungen durchlaufen dann einen Prozess, in dem die am besten geeignete Verteilung ermittelt wird. Der Prozess ist folgend durchgeführt worden:
 
--   Zunächst wird ein Histogramm der Daten mit den Verteilungen als Linien betrachtet. Die Verteilungen, welche den Balken besser folgen sind eher geeignet.
+1.  Zunächst wird ein Histogramm der Daten mit den Verteilungen als Linien betrachtet. Die Verteilungen, welche den Balken besser folgen sind eher geeignet.
 
--   In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell besser geignet.
+2.  In einem Cullen-Frey-Diagramm, werden die Datenpunkte zusammen mit den Verteilungen verglichen. Die Verteilungen, die am nächsten an den Beobachtungspunkten liegen, sind tendenziell besser geignet.
 
--   Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von den verschiedenen Verteilungen.
+3.  Mit der Funktion UnivariateML können verschiedene Verteilungen bereits im Vorhinein getestet werden, um herauszufinden, welche am besten zu den Daten passt. Diese Funktion vergleicht die Kompatibilität der Daten mit verschiedenen Verteilungen und bietet somit eine Möglichkeit, eine mögliche Passform für die vorliegenden Daten zu ermitteln. Diese Funktion unterstützt die Auswahl von den verschiedenen Verteilungen.
 
 Diese drei Schritte allein erlauben noch keine endgültige Entscheidung darüber, welche Verteilung am besten geeignet ist. Sie dienen jedoch dazu, die Auswahl der möglichen Verteilungen einzuschränken und eine Orientierung zu geben, mit welchen Daten gearbeitet wird.
 
--   Nachdem nun einige Verteilungen ausgeschlossen werden konnten, kann man sich den möglichen Verteilungen zuwenden. Man betrachtet die Verteilungen anhand von CDF-, QQ- und PP-Plots. Die Punkte in den Plots stellen die vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten, welche die Verteilung erzeugt, auf der X-Achse. Danach kann eine endgültige Entscheidung getroffen werden.
+Nachdem nun einige Verteilungen ausgeschlossen werden konnten, kann man sich den möglichen Verteilungen zuwenden. Man betrachtet die Verteilungen anhand von CDF-, QQ- und PP-Plots. Die Punkte in den Plots stellen die vorhandenen Daten auf der Y-Achse dar, im Vergleich zu den theoretischen Werten, welche die Verteilung erzeugt, auf der X-Achse. Danach kann eine endgültige Entscheidung getroffen werden.
 
 In Fällen, in denen die Verteilungen ähnlich sind und eine Entscheidung schwierig ist, sollte Folgendes berücksichtigt werden.
 
--Grössere Massen und grössere Geschwindigkeit bedeuten ein höheres Risiko, daher ist es wichtiger, die grössten Daten auf den QQ-, CDF- und PP-Plots abzudecken, als kleinere Daten.
+-   Bei der Geschwindigkeit und der Masse der Steinschläge sind vor allem die Extremwerte relevant, weil diese eine erhöhte Chance haben, die Sicherheitsnetze zu durchdringen. Daher wird dort darauf geachtet, dass die Extremwerte in den QQ-, CDF- und PP-Plots korrekt abgedeckt sind.
 
--   Bei den Zeitlichen Abständen sind kleinere Daten wichtiger, da weniger Zeitintervalle mehrere Steinschläge bedeuten und somit eine grössere Gefahr darstellen. In diesem Fall ist es wichtiger, die kleineren Daten in den QQ-, CDF- und PP-Plots abzudecken, als die grossen.
-
-Im nächsten Abschnitt befindet sich die Anwendung dieses Prozess auf beide Hänge.
+-   Bei dem zeitlichen Abstand sind vor allem die Werte unter 24 Stunden relevant, aufgrund der Reaktionszeit für das Räumen der Sicherheitsnetze nach einem Steinschlag. Daher wird dort darauf geachtet, dass die Werte im Bereich bis 24 in den QQ-, CDF- und PP-Plots korrekt abgedeckt sind.
 
 ```{r}
+#| code-summary: "Data Wrangling for zone 1"
+
 # Read Data
 zone_raw_1 <- read.csv("resources/out_1.csv")
 
@@ -116,36 +117,18 @@ time_diff_1 <- data.frame(
   mutate(stunden = stunden /60/60) # Um stunden zu erhalten
 ```
 
-### Zone 1 Masse
-
-Zunächst wird die Zone 1 hinsichtlich Masse untersucht. Beim Ausschlussverfahren zeigt sich, dass nur die Weibull- und die Lognormalverteilung in Frage kommen könnten. Der Vorschlag von UnivariateML ist die Lognormalverteilung.
-
-Vergleicht man die Masse am Zone 1 zwischen der Lognormalverteilung und der Weibullverteilung, so würde die Lognormalverteilung insgesamt besser die Daten abdecken, nur das letzte Quantil im QQ-Plot weicht deutlich ab.
-
-Bei der Weibullverteilung weichen die Punkte ebenfalls von der Linie ab, aber insbesondere die letzten Quantile passen zu dieser Verteilung.
-
-Trotz kleiner Abweichungen wird die Weibull-Verteilung zugewiesen. Gemäss letztem Schritt im Prozess ist es wichtig, dass die grössten Massen gedeckt sind.
-
 ```{r}
-# Calc Distribution
+#| code-summary: "Distribution for zone 1"
+
+# Calc Distribution mass zone 1
 mass.norm_1 <- fitdist(zone_1$masse, "norm")
 mass.unif_1 <- fitdist(zone_1$masse, "unif")
 mass.lnorm_1 <- fitdist(zone_1$masse, "lnorm")
 mass.weibull_1 <- fitdist(zone_1$masse, "weibull")
 mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
 zone_1_mass <- mass.weibull_1
-```
 
-### Zone 1 Geschwindigkeit
-
-Durch die erste Analyse filtert sich heraus, dass die Normal-, Weibull-, Exponential-, Gamma-, und Lognormalverteilung passen könnten.
-
-Der Vorschlag von UnivariateML ist die Normalverteilung.
-
-Nach dem Abgleich der Plots ist klar, dass die Normalverteilung am besten passt. Die Punkte verlaufen fast durchgehend entlang der Linie. Besonders in den oberen Werten ist diese Verteilung am nächsten bei der Linie. Daher wird die Normalverteilung zugewiesen.
-
-```{r}
-# Calc Distribution
+# Calc Distribution velocity zone 1
 velocity.norm_1 <- fitdist(zone_1$velocity, "norm")
 velocity.expo_1 <- fitdist(zone_1$velocity, "exp")
 velocity.unif_1 <- fitdist(zone_1$velocity, "unif")
@@ -155,27 +138,17 @@ velocity.weibull_1 <- fitdist(zone_1$velocity, "weibull")
 velocity.legend_1 <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
 zone_1_velocity <- velocity.norm_1
 
-```
-
-### Zone 1 Zeitabstände
-
-Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten.
-
-Der Vorschlag von UnivariateML ist die Exponentialverteilung.
-
-Die Auswertung der Plots zeigt deutlich, dass die Exponentialverteilung am besten passt. Die kleineren Werte werden bei der Exponentialverteilung besser gedeckt. Die anderen Verteilungen weichen fest von der Linie ab. Daher wird die Exponentialverteilung zugewiesen.
-
-```{r}
-# Calc Distribution
+# Calc Distribution time_diff zone 1
 time_diff.norm_1 <- fitdist(time_diff_1$stunden, "norm")
 time_diff.unif_1 <- fitdist(time_diff_1$stunden, "unif")
 time_diff.expo_1 <- fitdist(time_diff_1$stunden, "exp")
 time_diff.legend_1 <- c("Normal", "Unif", "Expo")
-
 zone_1_time <- time_diff.expo_1
 ```
 
 ```{r}
+#| code-summary: "Data Wrangling for zone 2"
+
 # Read Data
 zone_raw <- read.csv("resources/out_2.csv")
 
@@ -195,16 +168,10 @@ time_diff <- data.frame(
   stunden = as.numeric(diff(zone$datetime)))
 ```
 
-### Zone 2 Masse
-
-Nach einer ersten Prüfung bleiben die Verteilungen Weibull, Gamma, Exponential und Lognormal zur Auswahl.
-
-Der Vorschlag von UnivariateML ist die Exponentialverteilung.
-
-Nach Bewertung der Plots wird die Exponentialverteilung zugewiesen. Gamma- und Weibullverteilungen sind zwar ähnlich wie die Exponentialverteilung, decken aber die oberen Werte schlechter ab. Lognormal liegt im Allgemeinen näher an der Linie, berücksichtigt aber den höchsten Wert nicht.
-
 ```{r}
-# Calc Distribution
+#| code-summary: "Distribution for zone 1"
+
+# Calc Distribution velocity zone 2
 mass.norm <- fitdist(zone$masse, "norm")
 mass.expo <- fitdist(zone$masse, "exp")
 mass.unif <- fitdist(zone$masse, "unif")
@@ -213,18 +180,8 @@ mass.gamm <- fitdist(zone$masse, "gamma")
 mass.weibull <- fitdist(zone$masse, "weibull")
 mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
 zone_2_mass <- mass.expo
-```
 
-### Zone 2 Geschwindigkeit
-
-Beim Ausschlusserfahren erkennt man, dass viele Verteilungen ausgewählt werden könnten. Normal-, Lognormal-, Weibull- und Gammaverteilung stehen zur Auswahl.
-
-Der Vorschlag von UnivariateML ist die Weibullverteilung.
-
-Die Auswertung zeigt, dass nur die Weibullverteilung die Daten umfangreich decken kann. Daher wird diese Verteilung zugewiesen.
-
-```{r}
-# Calc Distribution
+# Calc Distribution velocity zone 2
 velocity.norm <- fitdist(zone$velocity, "norm")
 velocity.expo <- fitdist(zone$velocity, "exp")
 velocity.unif <- fitdist(zone$velocity, "unif")
@@ -233,18 +190,8 @@ velocity.gamm <- fitdist(zone$velocity, "gamma")
 velocity.weibull <- fitdist(zone$velocity, "weibull")
 velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
 zone_2_velocity <- velocity.weibull
-```
 
-### Zone 2 Zeitabstände
-
-Nach der ersten Prüfung kann man die Auswahl auf Weibull-, Gamma-, Exponential- und Lognormalverteilung reduzieren.
-
-Der Vorschlag von UnivariateML ist die Gammaverteilung.
-
-Beim Vergleich fällt schnell auf, dass Gamma- und Weibullverteilungen die einzigen Modelle sind, welche in Frage kommen. Die korrekte Verteilung in diesem Fall ist die Gammaverteilung, da diese sowohl der Empfehlung von UnivariateML entspricht als auch die unteren Werte besser abdeckt.
-
-```{r}
-# Calc Distribution
+# Calc Distribution time_diff zone 2
 time_diff.norm <- fitdist(time_diff$stunden, "norm")
 time_diff.expo <- fitdist(time_diff$stunden, "exp")
 time_diff.unif <- fitdist(time_diff$stunden, "unif")
@@ -259,17 +206,16 @@ zone_2_time <- time_diff.gamm
 
 ### Gewählte Verteilungen {#gewählte-verteilungen}
 
-In der folgenden Tabelle ist ersichtlich, welche Verteilungsfunktionen gewählt wurden. Die Parameter sind die ausgerechneten Werte, welche für das Generieren anhand der Verteilungsfunktion benötigt werden.
+In der folgenden Tabelle ist ersichtlich, welche Verteilungsfunktionen gewählt wurden. Anhand unseres beschriebenen [Verfahrens](#wahl-der-verteilungen). Die Parameter sind die ausgerechneten Werte, welche für das Generieren anhand der Verteilungsfunktion benötigt werden.
 
-| Zufallsvariable     | Zone | Verteilung  | Parameter 1 | Parameter 2 |
-|-------------|:------------|-------------|-------------|-------------|
-| Masse               | 1    | Weibul      | `r zone_1_mass$estimate[1]`     | `r zone_1_mass$estimate[2]`     |
-| Geschwindigkeit     | 1    | Normal      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
-| Zeitabstand         | 1    | Exponential | `r zone_1_time$estimate[1]`     |                                 |
-| Masse               | 2    | Exponential | `r zone_2_mass$estimate[1]`     |                                 |
-| Geschwindigkeit     | 2    | Weibul      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
-| Zeitabstand         | 2    | Gamma       | `r zone_1_time$estimate[1]`     |                                 |
-
+| Zufallsvariable | Zone | Verteilung  | Parameter 1                     | Parameter 2                     |
+|---------------|:--------------|---------------|---------------|---------------|
+| Masse           | 1    | Weibul      | `r zone_1_mass$estimate[1]`     | `r zone_1_mass$estimate[2]`     |
+| Geschwindigkeit | 1    | Normal      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
+| Zeitabstand     | 1    | Exponential | `r zone_1_time$estimate[1]`     |                                 |
+| Masse           | 2    | Exponential | `r zone_2_mass$estimate[1]`     |                                 |
+| Geschwindigkeit | 2    | Weibul      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
+| Zeitabstand     | 2    | Gamma       | `r zone_1_time$estimate[1]`     |                                 |
 
 # Simulation
 
@@ -278,12 +224,16 @@ Nun sind den Zufallsvariablen Verteilungen zugeordnet. Der nächste Schritt ist 
 ## Generieren
 
 ```{r}
+#| code-summary: "Set amount interation"
+
 amount_iteration <- 1e7
 ```
 
 Das Generieren der Zufallsveriablen wurde mit R umgesetzt. Dabei wurden die Daten anhand der [gewählten Verteilungen](#gewählte-verteilungen) zufällig generiert. Insgesamt wurde für jede Zone **`r amount_iteration`** Steinschläge generiert.
 
 ```{r}
+#| code-summary: "Generated Data"
+
 set.seed(8128) # The 4. perfect number
 zone_1_generated = data.frame(
   mass = rweibull(amount_iteration, shape = zone_1_mass$estimate[1], scale = zone_1_mass$estimate[2]),
@@ -305,18 +255,24 @@ E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
 $$\newline
 
 ```{r}
+#| code-summary: "Calculate kin_energy"
+
 zone_1_generated$kin_energy = 
   zone_1_generated$mass * zone_1_generated$velocity^2 * 0.5 / 1000
 
 zone_2_generated$kin_energy = 
   zone_2_generated$mass * zone_2_generated$velocity^2 * 0.5 / 1000
 ```
+
 \newpage
+
 ## Wahrscheinlichkeitsberechnung
 
 Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen. Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst je Steinschlag, auszurechnen. Dafür verwenden wir folgende Formel. Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert. Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
 
 ```{r}
+#| code-summary: "Monte Carlo Simulation"
+
 plan(multisession)
 has_net_exceed_maxium <- function(index, mass_net, time_since_emptying, df) {
   if (index == 1) {
@@ -370,6 +326,8 @@ P_{\text{Tödlicher Unfall pro Jahr}} = P_{\text{Auto anwesend}} \times P_{\text
 $$
 
 ```{r}
+#| code-summary: "Calculate Propapility"
+
 prob_auto_presenc <- 7/300
 
 monte_carlo_zone_1.prop_net_fails <- monte_carlo_zone_1 / amount_iteration
