@@ -32,7 +32,7 @@ library(dplyr)
 
 Die Kantonsstrasse nach Schiers GB ist von Steinschlägen betroffen. Um die Sicherheit der Verkehrsteilnehmer zu gewährleisten, wurde im Auftrag des Kantonsingenieurs diese Risikoanalyse erstellt.
 
-An zwei Stellen des Hangs fallen täglich Steine herunter. Bevor diese die Strasse erreichen, werden sie von Fangnetzen aufgehalten. Diese Netze können eine bestimmte Menge an Energie von herabfallenden Steinen aufnehmen. Wenn jedoch Steine in den Netzen liegen, verringert sich ihre Haltekraft. Die Netze werden täglich geräumt. Durch die Abnutzung der Netze hat sich die Stabilität beeinträchtigt und das Risiko erhöht.
+An zwei Stellen des Hangs fallen täglich Steine herunter. Bevor diese die Strasse erreichen, werden sie von Fangnetzen aufgehalten. Diese Netze können eine bestimmte Menge an Energie von herabfallenden Steinen aufnehmen. Wenn jedoch Steine in den Netzen liegen, verringert sich ihre Haltekraft. Die Sicherheitsnetze werden täglich geräumt. Durch die Abnutzung der Netze hat sich die Stabilität beeinträchtigt und das Risiko erhöht.
 
 Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist. Diese Analyse soll die Basis für die Entscheidung des Kantonsingenieurs bilden.
 
@@ -88,7 +88,7 @@ Nachdem nun einige Verteilungen ausgeschlossen werden konnten, kann man sich den
 
 In Fällen, in denen die Verteilungen ähnlich sind und eine Entscheidung schwierig ist, sollte Folgendes berücksichtigt werden.
 
--   Bei der Geschwindigkeit und der Masse der Steinschläge sind vor allem die Extremwerte relevant, weil diese eine erhöhte Chance haben, die Sicherheitsnetze zu durchdringen. Daher wird dort darauf geachtet, dass die Extremwerte in den QQ-, CDF- und PP-Plots korrekt abgedeckt sind.
+-   Bei der Geschwindigkeit und der Masse der Steinschläge sind vor allem die Extremwerte relevant, weil diese eine erhöhte Chance haben, die Sicherheitsnetze zu durchdringen. Daher wird dort darauf geachtet, dass diese Werte in den QQ-, CDF- und PP-Plots korrekt abgedeckt sind.
 
 -   Bei dem zeitlichen Abstand sind vor allem die Werte unter 24 Stunden relevant, aufgrund der Reaktionszeit für das Räumen der Sicherheitsnetze nach einem Steinschlag. Daher wird dort darauf geachtet, dass die Werte im Bereich bis 24 in den QQ-, CDF- und PP-Plots korrekt abgedeckt sind.
 
@@ -268,7 +268,7 @@ zone_2_generated$kin_energy =
 
 ## Wahrscheinlichkeitsberechnung
 
-Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen. Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst je Steinschlag, auszurechnen. Dafür verwenden wir folgende Formel. Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert. Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
+Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen. Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz bei einem Steinschlag reisst, auszurechnen. Dafür verwenden wir folgende Formel. Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert. Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
 
 ```{r}
 #| code-summary: "Monte Carlo Simulation"
@@ -359,7 +359,7 @@ Die Simulation von `r amount_iteration` Steinschlägen in der Zone 2 ergab, dass
 
 ## Gesammt
 
-Das Verbinden der Wahrscheinlichkeiten, dass ein Unfall in Folge Steinschläge auf der Kantonsstrasse. Wird mit der folgenden Formel berechnet. $$
+Das Verbinden der Wahrscheinlichkeiten, eines Unfalls aufgrund von Steinschlägen auf der Kantonsstrasse wird mit der folgenden Formel berechnet. $$
 P_{\text{Todesfall}}(P_{\text{Todesfall Zone 1}} \cup P_{\text{Todesfall Zone 2}})
 $$ Daraus resultiert eine Wahrscheinlichkeit eines Unfalls in Folge eines Steinschlages von **`r prob_per_year`**
 
