@@ -136,11 +136,6 @@ mass.legend_1 <- c("Normal", "Unif", "Lognormal","Weibull")
 zone_1_mass <- mass.weibull_1
 ```
 
-```{r}
-# Plot different Distributions for mass
-denscomp(list(mass.norm_1, mass.unif_1, mass.lnorm_1, mass.weibull_1), legendtext = mass.legend_1, plotstyle = "ggplot")
-```
-
 ### Zone 1 Geschwindigkeit
 
 Durch die erste Analyse filtert sich heraus, dass die Normal-, Weibull-, Exponential-, Gamma-, und Lognormalverteilung passen könnten.
@@ -162,11 +157,6 @@ zone_1_velocity <- velocity.norm_1
 
 ```
 
-```{r}
-# Plot different Distributions for velocity
-denscomp(list(velocity.norm_1, velocity.expo_1, velocity.unif_1, velocity.lnorm_1, velocity.gamm_1, velocity.weibull_1), legendtext = velocity.legend_1, plotstyle = "ggplot")
-```
-
 ### Zone 1 Zeitabstände
 
 Die erste Analyse deutet in diesem Fall klar darauf hin, dass nur eine Exponential- oder Normalverteilung passend sein könnten.
@@ -183,11 +173,6 @@ time_diff.expo_1 <- fitdist(time_diff_1$stunden, "exp")
 time_diff.legend_1 <- c("Normal", "Unif", "Expo")
 
 zone_1_time <- time_diff.expo_1
-```
-
-```{r}
-# Plot different Distributions for velocity
-denscomp(list(time_diff.norm_1, time_diff.unif_1, time_diff.expo_1), legendtext = time_diff.legend_1, plotstyle = "ggplot")
 ```
 
 ```{r}
@@ -230,12 +215,6 @@ mass.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull
 zone_2_mass <- mass.expo
 ```
 
-```{r}
-# Plot different Distributions for mass
-denscomp(list(mass.norm, mass.expo, mass.unif, mass.lnorm, mass.gamm, mass.weibull), legendtext = mass.legend, plotstyle = "ggplot")
-
-```
-
 ### Zone 2 Geschwindigkeit
 
 Beim Ausschlusserfahren erkennt man, dass viele Verteilungen ausgewählt werden könnten. Normal-, Lognormal-, Weibull- und Gammaverteilung stehen zur Auswahl.
@@ -254,11 +233,6 @@ velocity.gamm <- fitdist(zone$velocity, "gamma")
 velocity.weibull <- fitdist(zone$velocity, "weibull")
 velocity.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "Weibull")
 zone_2_velocity <- velocity.weibull
-```
-
-```{r}
-# Plot different Distributions for velocity
-denscomp(list(velocity.norm, velocity.expo, velocity.unif, velocity.lnorm, velocity.gamm, velocity.weibull), legendtext = velocity.legend, plotstyle = "ggplot")
 ```
 
 ### Zone 2 Zeitabstände
@@ -281,10 +255,6 @@ time_diff.legend <- c("Normal", "Exponential", "Unif", "Lognormal", "Gamma", "We
 zone_2_time <- time_diff.gamm
 ```
 
-```{r}
-# Plot different Distributions for time difference
-denscomp(list(time_diff.norm, time_diff.expo, time_diff.unif, time_diff.lnorm, time_diff.gamm, time_diff.weibull), legendtext = time_diff.legend, plotstyle = "ggplot")
-```
 \newpage
 
 ### Gewählte Verteilungen {#gewählte-verteilungen}
