@@ -17,6 +17,8 @@ echo: false
 
 options(scipen = 999)
 
+source("monte_carlo.R")
+
 library(ggplot2)
 library(future.apply)
 library(tidyverse)
@@ -214,14 +216,10 @@ In der folgenden Tabelle ist ersichtlich, welche Verteilungsfunktionen gewählt 
 | Geschwindigkeit | 1    | Normal      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
 | Zeitabstand     | 1    | Exponential | `r zone_1_time$estimate[1]`     |                                 |
 | Masse           | 2    | Exponential | `r zone_2_mass$estimate[1]`     |                                 |
-| Geschwindigkeit | 2    | Weibul      | `r zone_1_velocity$estimate[1]` | `r zone_1_velocity$estimate[2]` |
-| Zeitabstand     | 2    | Gamma       | `r zone_1_time$estimate[1]`     |                                 |
+| Geschwindigkeit | 2    | Weibul      | `r zone_2_velocity$estimate[1]` | `r zone_2_velocity$estimate[2]` |
+| Zeitabstand     | 2    | Gamma       | `r zone_2_time$estimate[1]`     |                                 |
 
 # Simulation
-
-Nun sind den Zufallsvariablen Verteilungen zugeordnet. Der nächste Schritt ist die Simulation.
-
-## Generieren
 
 ```{r}
 #| code-summary: "Set amount interation"
@@ -246,7 +244,25 @@ zone_2_generated = data.frame(
   velocity = rweibull(amount_iteration, shape = zone_2_velocity$estimate[1], scale = zone_2_velocity$estimate[2]),
   time_diff = rgamma(amount_iteration, shape = zone_2_time$estimate[1], rate = zone_2_time$estimate[2])
 )
+one.mass <- fitdist(zone_1_generated$mass, "weibull")
+one.velocity <- fitdist(zone_1_generated$velocity, "norm")
+one.time_diff <- fitdist(zone_1_generated$time_diff, "exp")
+
+two.mass <- fitdist(zone_2_generated$mass, "exp")
+two.velocity <- fitdist(zone_2_generated$velocity, "weibull")
+two.time_diff <- fitdist(zone_2_generated$time_diff, "gamma")
+
 ```
+In der folgenden Tabelle wurden die Parameter von der Verteilung von den generierten Daten berechnet, welche zeigen, dass die Abweichung davon zu den echten Daten minimal ist.
+
+| Zufallsvariable | Zone | Verteilung  | Parameter 1                     | Parameter 2                     |
+|---------------|:--------------|---------------|---------------|---------------|
+| Masse           | 1    | Weibul      | `r one.mass$estimate[1]`     | `r one.mass$estimate[2]`     |
+| Geschwindigkeit | 1    | Normal      | `r one.velocity$estimate[1]` | `r one.velocity$estimate[2]` |
+| Zeitabstand     | 1    | Exponential | `r one.time_diff$estimate[1]`     |                                 |
+| Masse           | 2    | Exponential | `r two.mass$estimate[1]`     |                                 |
+| Geschwindigkeit | 2    | Weibul      | `r two.velocity$estimate[1]` | `r two.velocity$estimate[2]` |
+| Zeitabstand     | 2    | Gamma       | `r two.time_diff$estimate[1]`     |                                 |
 
 Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel berechnet und in Kilo Newton Meter umgewandelt.
 
@@ -258,13 +274,11 @@ $$\newline
 #| code-summary: "Calculate kin_energy"
 
 zone_1_generated$kin_energy = 
-  zone_1_generated$mass * zone_1_generated$velocity^2 * 0.5 / 1000
+  zone_1_generated$mass * zone_1_generated$velocity * zone_1_generated$velocity * 0.5 / 1000
 
 zone_2_generated$kin_energy = 
-  zone_2_generated$mass * zone_2_generated$velocity^2 * 0.5 / 1000
+  zone_2_generated$mass * zone_2_generated$velocity * zone_2_generated$velocity * 0.5 / 1000
 ```
-
-\newpage
 
 ## Wahrscheinlichkeitsberechnung
 
@@ -274,31 +288,8 @@ Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichk
 #| code-summary: "Monte Carlo Simulation"
 
 plan(multisession)
-has_net_exceed_maxium <- function(index, mass_net, time_since_emptying, df) {
-  if (index == 1) {
-    return(FALSE)
-  }
-  time_since_emptying <- time_since_emptying + df$time_diff[index]
-  if (time_since_emptying > 24) {
-    return(FALSE)
-  }
-  mass_net <- mass_net + df$mass[index - 1]
-  if (mass_net >= 2000) {
-    return(TRUE)
-  }
-  return(has_net_exceed_maxium(index-1, mass_net, time_since_emptying, df))
-}
-
-monte_carlo <- function(df) {
-  future_lapply(1:amount_iteration, function(i) {
-  return(df$kin_energy[i] >= 1200 || (df$kin_energy[i] >= 600 && has_net_exceed_maxium(i, 0, 0, df)))
-    }) %>% 
-    unlist() %>% 
-    sum()
-}
-
-monte_carlo_zone_2 <- monte_carlo(zone_2_generated)
-monte_carlo_zone_1 <- monte_carlo(zone_1_generated)
+monte_carlo_zone_2 <- monte_carlo(zone_2_generated, amount_iteration)
+monte_carlo_zone_1 <- monte_carlo(zone_1_generated, amount_iteration)
 ```
 
 Mit diesen Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz reisst, auszurechnen. Dafür verwenden wir folgende Formel.
