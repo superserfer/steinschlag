@@ -257,11 +257,11 @@ In der folgenden Tabelle wurden die Parameter von der Verteilung von den generie
 
 | Zufallsvariable | Zone | Verteilung  | Parameter 1                     | Parameter 2                     |
 |---------------|:--------------|---------------|---------------|---------------|
-| Masse           | 1    | Weibul      | `r one.mass$estimate[1]`     | `r one.mass$estimate[2]`     |
+| Masse           | 1    | Weibull     | `r one.mass$estimate[1]`     | `r one.mass$estimate[2]`     |
 | Geschwindigkeit | 1    | Normal      | `r one.velocity$estimate[1]` | `r one.velocity$estimate[2]` |
 | Zeitabstand     | 1    | Exponential | `r one.time_diff$estimate[1]`     |                                 |
 | Masse           | 2    | Exponential | `r two.mass$estimate[1]`     |                                 |
-| Geschwindigkeit | 2    | Weibul      | `r two.velocity$estimate[1]` | `r two.velocity$estimate[2]` |
+| Geschwindigkeit | 2    | Weibull     | `r two.velocity$estimate[1]` | `r two.velocity$estimate[2]` |
 | Zeitabstand     | 2    | Gamma       | `r two.time_diff$estimate[1]`     |                                 |
 
 Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel berechnet und in Kilo Newton Meter umgewandelt.
