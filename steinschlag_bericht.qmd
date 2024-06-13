@@ -40,7 +40,7 @@ Es muss entschieden werden, ob eine Strassensperrung unvermeidlich ist. Diese An
 
 # Wahrscheinlichkeitsmodellierung
 
-Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfall ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche eine Jährliche Wahrscheinlichkeit von 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
+Die Bestimmung einer Strassensperrung besteht in der Ermittlung der modellierten Wahrscheinlichkeit für einen Todesfall infolge eines Steinschlags. Dabei ist eine Berücksichtigung diverser Variablen erforderlich, welche einen Einfluss auf einen tatsächlichen Todesfall ausüben. Die Zusammensetzung dieser Variablen determiniert die Gesamtwahrscheinlichkeit für einen Todesfall, welche eine jährliche Wahrscheinlichkeit von 0.002 nicht überschreiten darf, um das Risiko auszuschliessen.
 
 \newpage
 
@@ -264,7 +264,7 @@ In der folgenden Tabelle wurden die Parameter von der Verteilung von den generie
 | Geschwindigkeit | 2    | Weibull     | `r two.velocity$estimate[1]` | `r two.velocity$estimate[2]` |
 | Zeitabstand     | 2    | Gamma       | `r two.time_diff$estimate[1]`     |                                 |
 
-Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der Physikalischen Formel berechnet und in Kilo Newton Meter umgewandelt.
+Die Kinetische Energie wird anhand der Geschwindigkeit und Masse eines Steinschlags, mittels der physikalischen Formel berechnet und in Kilo Newton Meter umgewandelt.
 
 $$
 E_{\text{kin}} = \frac{1}{2} \times m \times v^{2}
@@ -282,7 +282,7 @@ zone_2_generated$kin_energy =
 
 ## Wahrscheinlichkeitsberechnung
 
-Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen. Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, dass das Sicherheitsnetz bei einem Steinschlag reisst, auszurechnen. Dafür verwenden wir folgende Formel. Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert. Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
+Durch die Simulation von Steinschlägen ist es nun möglich, die Wahrscheinlichkeit eines Todesfalls zu berechnen. Mit den folgenden Angaben ist es möglich, die Wahrscheinlichkeit, die das Sicherheitsnetz bei einem Steinschlag reisst, auszurechnen. Dafür verwenden wir folgende Formel. Dass bei einem Steinschlag die Sicherheitsnetze reissen, müsste die kinetische Energie höher sein als 1200 kNm oder 600 kNm und die Masse im Sicherheitsnetz grösser oder gleich 2000 kg sein. Das Sicherheitsnetz wird alle 24 Stunden geleert. Um in der Simulation die Masse im Netz bei einem Steinschlag zu berechnen, werden rekursiv alle vergangenen Steinschläge, welche in den letzten 24 Stunden stattgefunden haben, durchlaufen und die Masse aufsummiert. Dadurch wird es ermöglicht, alle Steinschläge herauszufiltern, welche eine kinetische Energie von mindestens 1200 kNm haben oder mindestens 600 kNm und im Sicherheitsnetz eine Gesamtmasse von 2000 kg liegen.
 
 ```{r}
 #| code-summary: "Monte Carlo Simulation"
