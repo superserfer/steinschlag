@@ -224,7 +224,7 @@ In der folgenden Tabelle ist ersichtlich, welche Verteilungsfunktionen gewählt 
 ```{r}
 #| code-summary: "Set amount interation"
 
-amount_iteration <- 1e7
+amount_iteration <- 1e6
 ```
 
 Das Generieren der Zufallsveriablen wurde mit R umgesetzt. Dabei wurden die Daten anhand der [gewählten Verteilungen](#gewählte-verteilungen) zufällig generiert. Insgesamt wurde für jede Zone **`r amount_iteration`** Steinschläge generiert.
